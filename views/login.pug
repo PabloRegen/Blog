@@ -1,0 +1,26 @@
+doctype html
+html
+	head
+		title log in
+body
+	h1 Log in page
+	form
+		// add this to the form(action='/required path' method='get' or method='post')
+		p
+			input(type='text' name='email_username' placeholder='email or username' maxlength='50' required)
+			= email_username
+		p
+			input(type='password' name='password' placeholder='password' maxlength='50' required)
+			= password
+		p
+			input(type='checkbox' checked=false)
+			= staySigned
+		input(type='submit' value='log in')
+		= login
+	p
+		a(href='/signup')
+			= goSignup
+	p= goLostPassword
+	p
+		a(href='/')
+			= goHome

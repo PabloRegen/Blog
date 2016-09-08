@@ -1,0 +1,23 @@
+doctype html
+html
+	head
+		title sign up
+	body
+		h1 Sign up page
+		form
+			// add this to the form(action='/required path' method='get' or method='post')
+			p
+				input(type='text' name='email' placeholder='email' maxlength='50' required)
+				= email
+			p
+				input(type='text' name='username' placeholder='username' maxlength='50' required)
+				= username
+			p
+				input(type='password' name='password' placeholder='password' maxlength='50' required)
+				= password
+			p= terms
+			input(type='submit' value='create account')
+			= createAccount
+		p
+			a(href='/login')
+				= goLogin
