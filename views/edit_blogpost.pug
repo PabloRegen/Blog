@@ -1,0 +1,29 @@
+doctype html
+html
+	head
+		title Blog Edit post
+	body
+		h1 Edit your blog post
+		form
+			// add this to the form(action='/required path' method='post')
+			p
+				|Title <br/>
+				input(type='text' name='title' required)
+			p
+				|Header <br/>
+				textarea(name='header')
+			p
+				|Body <br/>
+				textarea(name='bio' placeholder='Your article goes here...')
+			p
+				|Change the picture <br/>
+				input(type='file' name='postPic')
+			p
+				input(type='button' value='Save post')
+			p
+				input(type='submit' value='Update post')
+		form
+			p
+				input(type='submit' value='Delete post')
+		p
+			a(href='/') Return to Blog.com

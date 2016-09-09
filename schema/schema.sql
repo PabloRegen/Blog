@@ -26,5 +26,6 @@ CREATE TABLE posts (
 	pictures		TEXT,								-- Separate table? data type?
 	url				TEXT,								-- Separate table?
 	slug			TEXT,								-- Separate table?
-	times_liked		INTEGER DEFAULT 0	
+	times_liked		INTEGER DEFAULT 0,
+	tags			TEXT
 );

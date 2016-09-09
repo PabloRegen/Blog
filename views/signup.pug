@@ -1,23 +1,27 @@
 doctype html
 html
 	head
-		title sign up
+		title Blog Create account
 	body
-		h1 Sign up page
+		h1 Create account
 		form
 			// add this to the form(action='/required path' method='get' or method='post')
 			p
-				input(type='text' name='email' placeholder='email' maxlength='50' required)
-				= email
+				|Your username <br/>
+				input(type='text' name='username' maxlength='50' required)
 			p
-				input(type='text' name='username' placeholder='username' maxlength='50' required)
-				= username
+				|Email <br/>
+				input(type='text' name='email' maxlength='50' required)
 			p
-				input(type='password' name='password' placeholder='password' maxlength='50' required)
-				= password
-			p= terms
-			input(type='submit' value='create account')
-			= createAccount
+				|Password <br/>
+				input(type='password' name='password' placeholder='at least 6 characters' maxlength='50' required)
+			p
+				|Password again<br/>
+				input(type='password' name='password' maxlength='50' required)
+			p
+				input(type='submit' value='Create your Blog account')
+			p
+				|By creating an account you agree to Blog's terms of service (add link)
 		p
-			a(href='/login')
-				= goLogin
+			|Already have an account? 
+			a(href='/signin') Sign in
