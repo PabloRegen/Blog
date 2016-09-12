@@ -1,25 +1,27 @@
 doctype html
 html
 	head
-		title Blog User profile
+		title User profile - Blog
+		link(href='index.css' type='text/css' rel='stylesheet')
 	body
-		h1 Create your user profile
-		form
-			// add this to the form(action='/required path' method='post')
-			p
-				|First name <br/>
-				input(type='text' name='firstName' maxlength='30' required)
-			p
-				|Last name <br/>
-				input(type='text' name='lastName' maxlength='30' required)
-			p
-				|Bio <br/>
-				textarea(name='bio' placeholder='Enter your bio...')
-			p
-				|Add your picture <br/>
-				input(type='file' name='userPic')
-			p
-				input(type='submit' value='Create profile')
+		div.main
+			h1 Create your user profile
+			form
+				// add this to the form(action='/required path' method='post')
+				p
+					|First name <br/>
+					input(type='text' name='firstName' maxlength='30' required)
+				p
+					|Last name <br/>
+					input(type='text' name='lastName' maxlength='30' required)
+				p
+					|Bio <br/>
+					textarea(name='bio' placeholder='Enter your bio...')
+				p
+					|Add your picture <br/>
+					input(type='file' name='userPic')
+				p
+					input(type='submit' value='Create profile')
 
-		p
-			a(href='/') Return to Blog.com
+			p
+				a(href='/') Return to Blog.com

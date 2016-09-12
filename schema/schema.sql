@@ -3,7 +3,7 @@ CREATE TABLE contributors (
 	first_name 		VARCHAR(30),
 	last_name 		VARCHAR(30),
     email 			VARCHAR(50) NOT NULL UNIQUE,
-    password 		TEXT NOT NULL, 						 -- need hash
+    password 		VARCHAR(50) NOT NULL, 						 -- need hash
     verified 		BOOLEAN DEFAULT FALSE,
     moderator 		BOOLEAN DEFAULT FALSE,
     bio 			VARCHAR(300),

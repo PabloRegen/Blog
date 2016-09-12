@@ -1,26 +1,28 @@
 doctype html
 html
 	head
-		title Blog Sign In
+		title Sign In - Blog
+		link(href='index.css' type='text/css' rel='stylesheet')
 body
-	h1 Sign in
-	form
-		// add this to the form(action='/required path' method='get' or method='post')
-		p 
-			|Username or Email <br/>
-			input(type='text' name='email_username' maxlength='50' required)
-		p 
-			|Password <br/>
-			input(type='password' name='password' maxlength='50' required)
+	div.main
+		h1 Sign in
+		form
+			// add this to the form(action='/required path' method='get' or method='post')
+			p 
+				|Username or Email <br/>
+				input(type='text' name='email_username' maxlength='50' required)
+			p 
+				|Password <br/>
+				input(type='password' name='password' maxlength='50' required)
+			p
+				input(type='checkbox' checked)
+				|Stay signed in
+			p
+				input(type='submit' value='Sign in')
 		p
-			input(type='checkbox' checked)
-			|Stay signed in
+			|New to Blog? 
+			a(href='/signup') Create your Blog account
+		p 
+			|Forgot your password? (add link to page)
 		p
-			input(type='submit' value='Sign in')
-	p
-		|New to Blog? 
-		a(href='/signup') Create your Blog account
-	p 
-		|Forgot your password? (add link to page)
-	p
-		a(href='/') Return to Blog.com
+			a(href='/') Return to Blog.com
