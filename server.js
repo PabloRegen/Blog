@@ -1,25 +1,27 @@
 const express = require('express');
 const app = express();
+
+// use npm validator?
 const signup_validator = require('./services/signup_validator.js');
 const profile_validator = require('./services/profile_validator.js');
-// or use npm install validator & var validator = require('validator');?
 
+var signup_data_post = require('./services/signup_data_post.js');
+
+// to be used later:
 // var renderSomethingLater = function() {
 // 	return {
 // 		key: 'value', 
 // 	};
 // };
 
-// app.set('views', __dirname + '/views'); // needed?
-// or
-// app.set('views', './views'); // needed?
-// After the view engine is set, you don’t have to specify the engine or load the template engine module in your app; 
-// Express loads the module internally
+
+// After the view engine is set, no need to specify the engine or load the template engine module; Express does it internally
 app.set('view engine', 'pug');
 app.use('/images', express.static('./images'));
 app.use(express.static('styles'));
 
-app.get('/', function(req, res) {
+// ES6: app.get('/', (req, res) => {
+app.get('/', function(req, res) { 
     res.render('home');
 });
 
@@ -47,6 +49,7 @@ app.get('/read_blogpost', function(req, res) {
     res.render('read_blogpost');
 });
 
+// should be app.post instead?
 app.get('/land_after_signup', function(req, res) {
     const username = req.query.username;
     const email = req.query.email;
@@ -58,5 +61,7 @@ app.get('/land_after_signup', function(req, res) {
     res.render('land_after_signup');
 });
 
-app.listen(8000);
-console.log('Server running at localhost:8000')
+
+app.listen(8000, () => {
+  console.log('Server running at port 8000');
+});
