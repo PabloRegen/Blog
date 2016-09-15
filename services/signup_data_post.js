@@ -1,3 +1,4 @@
+/*
 const pg = require('pg');
 
 // instantiate a new client
@@ -31,3 +32,4 @@ client.connect(function(err) {
 
 // export module or part of it
 // module.exports = signup_data_post
+*/
