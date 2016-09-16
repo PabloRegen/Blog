@@ -1,7 +1,9 @@
 const express = require('express');
+const bodyParser = require('body-parser')
+
 const app = express();
 
-// use npm validator?
+// use npm validator package instead
 const signup_validator = require('./services/signup_validator.js');
 const profile_validator = require('./services/profile_validator.js');
 
@@ -17,36 +19,40 @@ var signup_data_post = require('./services/signup_data_post.js');
 
 // After the view engine is set, no need to specify the engine or load the template engine module; Express does it internally
 app.set('view engine', 'pug');
-app.use('/images', express.static('./images'));
-app.use(express.static('styles'));
+app.use('/images', express.static(__dirname + '/images')); // site picture
+app.use(express.static('styles')); // css files
+
+
+// not needed unless views folder is named other than its default 'views' name (eg. 'hello') 
+// app.set('views', __dirname + '/hello');
 
 // ES6: app.get('/', (req, res) => {
-app.get('/', function(req, res) { 
-    res.render('home');
+app.get('/', function(req, res) {
+    res.render('./home');
 });
 
 app.get('/signup', function(req, res) {
-    res.render('signup');
+    res.render('./user/signup');
 });
 
 app.get('/signin', function(req, res) {
-    res.render('signin');
+    res.render('./user/signin');
 });
 
 app.get('/profile', function(req, res) {
-    res.render('profile');
+    res.render('./user/profile');
 });
 
-app.get('/create_blogpost', function(req, res) {
-    res.render('create_blogpost');
+app.get('/post_create', function(req, res) {
+    res.render('./post/create');
 });
 
-app.get('/edit_blogpost', function(req, res) {
-    res.render('edit_blogpost');
+app.get('/post_edit', function(req, res) {
+    res.render('./post/edit');
 });
 
-app.get('/read_blogpost', function(req, res) {
-    res.render('read_blogpost');
+app.get('/post_read', function(req, res) {
+    res.render('./post/read');
 });
 
 // should be app.post instead?
@@ -58,7 +64,7 @@ app.get('/land_after_signup', function(req, res) {
 
     console.log(username, email, password, confirm_password);
 
-    res.render('land_after_signup');
+    res.render('./land_after_signup');
 });
 
 
