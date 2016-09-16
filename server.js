@@ -20,8 +20,7 @@ var signup_data_post = require('./services/signup_data_post.js');
 // After the view engine is set, no need to specify the engine or load the template engine module; Express does it internally
 app.set('view engine', 'pug');
 app.use('/images', express.static(__dirname + '/images')); // site picture
-app.use(express.static('styles')); // css files
-
+app.use(express.static(__dirname + '/styles')); // css files
 
 // not needed unless views folder is named other than its default 'views' name (eg. 'hello') 
 // app.set('views', __dirname + '/hello');
