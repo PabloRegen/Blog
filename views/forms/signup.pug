@@ -6,9 +6,9 @@ html
 	body
 		div.main
 			h1 Create your account
-			p#member 
+			p#member
 				a(href='/signin') I already have an account
-			form(action='/land_after_signup' method='get')
+			form(action='/signup' method='post')
 				p
 					|Choose a username <br/>
 					input(type='text' name='username' maxlength='50' required)

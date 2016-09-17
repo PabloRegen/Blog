@@ -31,15 +31,15 @@ app.get('/', function(req, res) {
 });
 
 app.get('/signup', function(req, res) {
-    res.render('./user/signup');
+    res.render('./forms/signup');
 });
 
 app.get('/signin', function(req, res) {
-    res.render('./user/signin');
+    res.render('./forms/signin');
 });
 
 app.get('/profile', function(req, res) {
-    res.render('./user/profile');
+    res.render('./forms/profile');
 });
 
 app.get('/post_create', function(req, res) {
@@ -54,16 +54,16 @@ app.get('/post_read', function(req, res) {
     res.render('./post/read');
 });
 
-// should be app.post instead?
-app.get('/land_after_signup', function(req, res) {
-    const username = req.query.username;
-    const email = req.query.email;
-    const password = req.query.password;
-    const confirm_password = req.query.confirm_password;
 
-    console.log(username, email, password, confirm_password);
+// send as a POST request, use body-parser, and get the values from req.body
+app.post('/signup', function(req, res) {
+    // const username = req.query.username;
+    // const email = req.query.email;
+    // const password = req.query.password;
+    // const confirm_password = req.query.confirm_password;
+    // console.log(username, email, password, confirm_password);
 
-    res.render('./land_after_signup');
+    res.render('./land');
 });
 
 
