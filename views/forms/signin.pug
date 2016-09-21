@@ -6,8 +6,7 @@ html
 body
 	div.main
 		h1 Sign in
-		form
-			// add this to the form(action='/required path' method='get' or method='post')
+		form(action='/signin' method='post')
 			p 
 				|Username or Email <br/>
 				input(type='text' name='email_username' maxlength='50' required)
@@ -15,7 +14,7 @@ body
 				|Password <br/>
 				input(type='password' name='password' maxlength='50' required)
 			p
-				input(type='checkbox' checked)
+				input(type='checkbox' name='stay_signed' checked)
 				|Stay signed in
 			p
 				input(type='submit' value='Sign in')

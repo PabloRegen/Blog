@@ -16,11 +16,10 @@ CREATE TABLE contributors (
 	logged_in BOOLEAN DEFAULT FALSE
 );
 
--- pictures & tags were relocated
--- 'posts' table has an item for each blogpost
 CREATE TABLE posts (
-	contr_username VARCHAR(50) REFERENCES contributors,
-	date_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP PRIMARY KEY,
+	post_id INTEGER PRIMARY KEY,
+	username VARCHAR(50) NOT NULL UNIQUE REFERENCES contributors,
+	date_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	date_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	title VARCHAR(250) NOT NULL,
 	dek VARCHAR(500),
@@ -30,14 +29,14 @@ CREATE TABLE posts (
 	times_liked INTEGER DEFAULT 0,
 );
 
--- 'tags' table has an item for each possible tag
 CREATE TABLE tags (
 	tags VARCHAR(50) PRIMARY KEY,
 );
 
--- 'tags_posts' table has an item for each time you've assigned
---  a given tag (from the 'tags' table) to a post (from the 'posts' table)
+-- Junction table to create many-to-many relationships between tags & posts tables, & avoid adding duplicate entries
+-- It has an item for each time you've assigned a given tag (from the 'tags' table) to a post (from the 'posts' table)
 CREATE TABLE tags_posts (
-	tags VARCHAR(50) REFERENCES tags PRIMARY KEY,
-	date_posted TIMESTAMP REFERENCES posts
+	tags VARCHAR(50) REFERENCES tags,
+	post_id INTEGER REFERENCES posts,
+	PRIMARY KEY (post_id, tags)
 );

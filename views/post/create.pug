@@ -4,8 +4,7 @@ html
 		title Create post - Blog
 	body
 		h1 Create your blog post
-		form
-			// add this to the form(action='/required path' method='post')
+		form(action='/post_create' method='post')
 			p
 				|Title <br/>
 				input(type='text' name='title' required)
@@ -14,7 +13,7 @@ html
 				textarea(name='header')
 			p
 				|Body <br/>
-				textarea(name='bio' placeholder='Your article goes here...')
+				textarea(name='body' placeholder='Your article goes here...')
 			p
 				|Add a picture <br/>
 				input(type='file' name='postPic')

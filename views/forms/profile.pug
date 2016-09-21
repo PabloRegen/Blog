@@ -6,14 +6,13 @@ html
 	body
 		div.main
 			h1 Create your user profile
-			form
-				// add this to the form(action='/required path' method='post')
+			form(action='/profile' method='post')
 				p
 					|First name <br/>
-					input(type='text' name='firstName' maxlength='30' required)
+					input(type='text' name='firstName' maxlength='30')
 				p
 					|Last name <br/>
-					input(type='text' name='lastName' maxlength='30' required)
+					input(type='text' name='lastName' maxlength='30')
 				p
 					|Bio <br/>
 					textarea(name='bio' placeholder='Enter your bio...')
