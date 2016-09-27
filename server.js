@@ -1,24 +1,19 @@
 const express = require('express');
 let app = express();
-const multer  = require('multer') // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
+const multer  = require('multer'); // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
 let upload = multer({ dest: 'uploads/' }); // or const upload = multer()?
 const bodyParser = require('body-parser');
 const path = require('path');
 
-// // use an npm validator package instead?
+// // use checkit
 // const signup_validator = require('./services/signup_validator.js');
 // const profile_validator = require('./services/profile_validator.js');
 
-var signup_data_post = require('./services/signup_data_post.js');
-
 app.set('view engine', 'pug');
 
-app.use(bodyParser.urlencoded({ extended: true })); // must provide extended option
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/images', express.static(path.join(__dirname, 'images'))); // site picture
 app.use(express.static(path.join(__dirname, 'styles'))); // css files
-
-// not needed unless views folder is named other than its default 'views' name (eg. 'hello') 
-// app.set('views', __dirname + '/hello');
 
 // to be used later:
 // var renderSomethingLater = function() {
@@ -27,8 +22,6 @@ app.use(express.static(path.join(__dirname, 'styles'))); // css files
 //  };
 // };
 
-
-// GET
 app.get('/', (req, res) => {
     res.render('./home');
 });
@@ -58,7 +51,6 @@ app.get('/post_read', (req, res) => {
 });
 
 
-// POST
 app.post('/signup', (req, res) => {
 	const username = req.body.username;
     const email = req.body.email;
@@ -68,7 +60,17 @@ app.post('/signup', (req, res) => {
     console.log(req.body);
     console.log(username, email, password, confirm_password);
 
-    res.render('./land');
+    var signup_data = require('./lib/signup_data.js');
+
+    new.Promise(function(resolve, reject) {
+        function(username, email, password) {
+            return signup_data(username, email, password);
+        })
+        .then(function() {
+            res.render('./land');
+        })
+        .catch((e) => console.error(e));
+    });
 });
 
 app.post('/signin', (req, res) => {
