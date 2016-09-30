@@ -8,11 +8,8 @@ html
 			h1 Create your user profile
 			form(action='/profile' method='post')
 				p
-					|First name <br/>
-					input(type='text' name='firstName' maxlength='30')
-				p
-					|Last name <br/>
-					input(type='text' name='lastName' maxlength='30')
+					|Name <br/>
+					input(type='text' name='name' maxlength='80')
 				p
 					|Bio <br/>
 					textarea(name='bio' placeholder='Enter your bio...')

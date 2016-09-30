@@ -1,3 +1,7 @@
+// To insert the next value of the sequence into the serial column exclude the column from the list of columns in the INSERT statement
+// CURRENT_TIMESTAMP: sometimes is better to just make it NOT NULL and handle the current-time stuff in the code 
+// (eg. issues: updating rows or work in the wrong timezone)
+
 'use strict';
 
 exports.up = function (knex, Promise) {
@@ -5,48 +9,46 @@ exports.up = function (knex, Promise) {
 		knex.schema.createTable('users', function(t) {
 			t.increments();
 			t.text('username').notNullable().unique();
-			t.text('firstName');
-			t.text('LastName');
+			t.text('name');
 			t.text('email').notNullable().unique();
-			t.text('password').notNullable();
+			t.text('pwHash').notNullable();
 			t.text('bio');
 			t.text('pic');
-			t.boolean('isVerified').defaultTo(FALSE);
-			t.boolean('isModerator').defaultTo(FALSE);
-			t.boolean('isSignedin').defaultTo(FALSE);
-			t.timestamp('lastSigninAt', TRUE);
-			t.timestamp('lastSeenAt', TRUE);
-			t.timestamp('createdAt', 'dateTime'); // or t.timestamp('createdAt') or t.timestamp('createdAt').defaultTo(knex.fn.now()); ???
-			t.boolean('isActive').defaultTo(TRUE);
-			t.timestamp('deletedAt', TRUE);
+			t.boolean('isVerified').defaultTo(false);
+			t.boolean('isModerator').defaultTo(false);
+			t.timestamp('lastSigninAt', true);
+			t.timestamp('lastSeenAt', true);
+			t.timestamp('createdAt').defaultsTo(knex.raw('CURRENT_TIMESTAMP'));
+			t.boolean('isActive').defaultTo(true);
+			t.timestamp('deletedAt', true);
 		}),
 		knex.schema.createTable('posts', function(t) {
 			t.increments();
-			t.integer('userId').notNullable().references('users.id');
+			t.integer('userId').notNullable().references('users.id').onDelete('RESTRICT');
 			t.text('title').notNullable();
 			t.text('subtitle');
-			t.text('body')notNullable();
-			t.integer('timesLiked').defaultTo(0);
-			t.integer('timesShared').defaultTo(0);
-			t.timestamp('postedAt', 'dateTime'); // or t.timestamp('postedAt') or t.timestamp('postedAt').defaultTo(knex.fn.now()); ???
-			t.timestamp('updatedAt', 'dateTime'); // or t.timestamp('updatedAt') or t.timestamp('updatedAt').defaultTo(knex.fn.now()); ???
-			t.boolean('isDeleted').defaultTo(FALSE);
-			t.timestamp('deletedAt', TRUE);
+			t.text('body').notNullable();
+			t.timestamp('postedAt').defaultsTo(knex.raw('CURRENT_TIMESTAMP'));
+			t.timestamp('updatedAt').defaultsTo(knex.raw('CURRENT_TIMESTAMP'));
+			t.timestamp('deletedAt', true);
 		}),
 		knex.schema.createTable('tags', function(t) {
 			t.increments();
 			t.text('name').notNullable().unique();
+			// deletedAt TIMESTAMP - need a soft delete scenario?
 		}),
+		// Junction table to create many-to-many relationships between tags & posts tables, & avoid adding duplicate entries
+		// It has an item for each time a given tag (from the 'tags' table) is assigned to a post (from the 'posts' table)
 		knex.schema.createTable('tags_posts', function(t) {
-			t.integer('tagId').notNullable().references('tags.id').onDelete(RESTRICT);
-			t.integer('postId').notNullable().references('posts.id').onDelete(RESTRICT);
-			t.primary(['tag_id', 'post_id'])
+			t.increments();
+			t.integer('tagId').notNullable().references('tags.id').onDelete('RESTRICT');
+			t.integer('postId').notNullable().references('posts.id').onDelete('RESTRICT');
 		}),
 		knex.schema.createTable('slugs', function(t) {
 			t.increments();
-			t.integer('postId').notNullable().references('posts.id');
+			t.integer('postId').notNullable().references('posts.id').onDelete('RESTRICT');
 			t.text('name').notNullable().unique();
-			t.boolean('isCurrent').defaultTo(FALSE);
+			t.boolean('isCurrent').defaultTo(false);
 		})
 	])
 };

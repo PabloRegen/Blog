@@ -1,9 +1,19 @@
 const express = require('express');
 let app = express();
 const multer  = require('multer'); // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
-let upload = multer({ dest: 'uploads/' }); // or const upload = multer()?
+let upload = multer({ dest: 'uploads/' });
 const bodyParser = require('body-parser');
 const path = require('path');
+
+const knex = require('knex')({
+  client: 'pg',
+  connection: {...},
+  pool: {...},
+  acquireConnectionTimeout: ...,
+  migrations: {tableName: 'migrations'}
+  searchPath: ...,
+});
+
 
 // // use checkit
 // const signup_validator = require('./services/signup_validator.js');
@@ -60,11 +70,17 @@ app.post('/signup', (req, res) => {
     console.log(req.body);
     console.log(username, email, password, confirm_password);
 
-    var signup_data = require('./lib/signup_data.js');
+    var signup_validator = require('./lib/validator/signup.js');
+    var signup_store = require('./lib/store/signup.js');
 
     new.Promise(function(resolve, reject) {
+        // validate data
         function(username, email, password) {
-            return signup_data(username, email, password);
+            return signup_validator(username, email, password);
+        })
+        // store data
+        .then(function(username, email, password) {
+            return signup_store(username, email, password);
         })
         .then(function() {
             res.render('./land');
@@ -74,26 +90,50 @@ app.post('/signup', (req, res) => {
 });
 
 app.post('/signin', (req, res) => {
-    const email_username = req.body.email_username;
+    const usernameOrEmail = req.body.usernameOrEmail;
     const password = req.body.password;
-    const stay_signed = req.body.stay_signed;
+    // const stay_signed = req.body.stay_signed;
 
     console.log(req.body);
-    console.log(email_username, password, stay_signed);
+    console.log(usernameOrEmail, password);
 
-    res.send({email_username: email_username, pass: password, signed: stay_signed});
+    var signin_validator = require('./lib/validator/signin.js');
+
+    new.Promise(function(resolve, reject) {
+        // validate signin against signup data
+        function(usernameOrEmail, password) {
+            return signin_validator(usernameOrEmail, password);
+        })
+        .catch((e) => console.error(e));
+    });
+
+    res.send({usernameOrEmail: usernameOrEmail, pass: password, signed: stay_signed});
 });
 
 app.post('/profile', (req, res) => {
-    const firstName = req.body.firstName;
-    const lastName = req.body.lastName;
+    const name = req.body.name;
     const bio = req.body.bio;
     const userPic = req.body.userPic;
 
     console.log(req.body);
-    console.log(firstName, lastName, bio, userPic);
+    console.log(name, bio, userPic);
 
-    res.send({firstName: firstName, lastName: lastName, bio: bio, userPic: userPic});
+    var profile_validator = require('./lib/validator/profile.js');
+    var profile_store = require('./lib/store/profile.js');
+
+    new.Promise(function(resolve, reject) {
+        // validate data
+        function(name, bio, userPic) {
+            return profile_validator(name, bio, userPic);
+        })
+        // store data
+        .then(function(name, bio, userPic) {
+            return profile_store(name, bio, userPic);
+        })
+        .catch((e) => console.error(e));
+    });
+
+    res.send({name: name, bio: bio, userPic: userPic});
 });
 
 app.post('/post_create', (req, res) => {
