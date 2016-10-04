@@ -1,5 +1,7 @@
 const express = require('express');
 let app = express();
+const Promise = require('bluebird');
+const bhttp = require('bhttp');
 const multer  = require('multer'); // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
 let upload = multer({ dest: 'uploads/' });
 const bodyParser = require('body-parser');
@@ -10,12 +12,12 @@ const knex = require('knex')({
   connection: {...},
   pool: {...},
   acquireConnectionTimeout: ...,
-  migrations: {tableName: 'migrations'}
+  migrations: {tableName: 'migrations'},
   searchPath: ...,
 });
 
 
-// // use checkit
+// // use checkit -> https://www.npmjs.com/package/checkit
 // const signup_validator = require('./services/signup_validator.js');
 // const profile_validator = require('./services/profile_validator.js');
 
@@ -73,9 +75,9 @@ app.post('/signup', (req, res) => {
     var signup_validator = require('./lib/validator/signup.js');
     var signup_store = require('./lib/store/signup.js');
 
-    new.Promise(function(resolve, reject) {
+    Promise.try(function() {
         // validate data
-        function(username, email, password) {
+        return function(username, email, password) {
             return signup_validator(username, email, password);
         })
         // store data
@@ -85,8 +87,8 @@ app.post('/signup', (req, res) => {
         .then(function() {
             res.render('./land');
         })
-        .catch((e) => console.error(e));
-    });
+        .catch((e) => console.error('An error ocurred!', e));
+    })
 });
 
 app.post('/signin', (req, res) => {
@@ -99,15 +101,16 @@ app.post('/signin', (req, res) => {
 
     var signin_validator = require('./lib/validator/signin.js');
 
-    new.Promise(function(resolve, reject) {
-        // validate signin against signup data
-        function(usernameOrEmail, password) {
+    Promise.try(function() {
+        return function(usernameOrEmail, password) {
             return signin_validator(usernameOrEmail, password);
         })
-        .catch((e) => console.error(e));
-    });
+        .then function() {
+            res.send({usernameOrEmail: usernameOrEmail, pass: password});
+        }
+        .catch((e) => console.error('An error ocurred!', e));
+    })
 
-    res.send({usernameOrEmail: usernameOrEmail, pass: password, signed: stay_signed});
 });
 
 app.post('/profile', (req, res) => {
@@ -121,19 +124,21 @@ app.post('/profile', (req, res) => {
     var profile_validator = require('./lib/validator/profile.js');
     var profile_store = require('./lib/store/profile.js');
 
-    new.Promise(function(resolve, reject) {
+    Promise.try(function() {
         // validate data
-        function(name, bio, userPic) {
+        return function(name, bio, userPic) {
             return profile_validator(name, bio, userPic);
         })
         // store data
         .then(function(name, bio, userPic) {
             return profile_store(name, bio, userPic);
         })
-        .catch((e) => console.error(e));
-    });
+        .then function() {
+            res.send({name: name, bio: bio, userPic: userPic});
+        }
+        .catch((e) => console.error('An error ocurred!', e));
+    })
 
-    res.send({name: name, bio: bio, userPic: userPic});
 });
 
 app.post('/post_create', (req, res) => {

@@ -8,13 +8,13 @@ CREATE TABLE users (
 	pwHash TEXT NOT NULL,
 	bio TEXT,
 	pic TEXT,
-	isVerified BOOLEAN DEFAULT FALSE,
-	isModerator BOOLEAN DEFAULT FALSE,
+	createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	lastSigninAt TIMESTAMP,
 	lastSeenAt TIMESTAMP,
-	createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	deletedAt TIMESTAMP,
 	isActive BOOLEAN DEFAULT TRUE,
-	deletedAt TIMESTAMP
+	isVerified BOOLEAN DEFAULT FALSE,
+	isModerator BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE posts (
@@ -25,13 +25,14 @@ CREATE TABLE posts (
 	body TEXT NOT NULL,
 	postedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	deletedAt TIMESTAMP
+	deletedAt TIMESTAMP,
+	isVisible BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE tags (
 	id SERIAL PRIMARY KEY,
-	name TEXT NOT NULL UNIQUE
-	-- deletedAt TIMESTAMP - need a soft delete scenario?
+	name TEXT NOT NULL UNIQUE,
+	deletedAt TIMESTAMP
 );
 
 -- Junction table to create many-to-many relationships between tags & posts tables, & avoid adding duplicate entries
@@ -45,6 +46,6 @@ CREATE TABLE tags_posts (
 CREATE TABLE slugs (
 	id SERIAL PRIMARY KEY,
 	postId INTEGER NOT NULL REFERENCES posts ON DELETE RESTRICT,
-	name TEXT NOT NULL UNIQUE,
+	name TEXT NOT NULL,
 	isCurrent BOOLEAN DEFAULT FALSE
 );
