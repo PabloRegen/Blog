@@ -27,19 +27,23 @@ exports.up = function(knex, Promise) {
 			t.text('name').notNullable().unique();
 			t.timestamp('deletedAt', true);
 		})
-	]).then(function() {
-		return knex.schema.createTable('posts', function(t) {
-			t.increments();
-			t.integer('userId').notNullable().references('users.id').onDelete('RESTRICT');
-			t.text('title').notNullable();
-			t.text('subtitle');
-			t.text('body').notNullable();
-			t.timestamp('postedAt').defaultsTo(knex.raw('CURRENT_TIMESTAMP'));
-			t.timestamp('updatedAt').defaultsTo(knex.raw('CURRENT_TIMESTAMP'));
-			t.timestamp('deletedAt', true);
-			t.boolean('isVisible').defaultTo(true);
-		});
-	}).then(function() {
+	])
+	.then(function() {
+		return Promise.all([
+			knex.schema.createTable('posts', function(t) {
+				t.increments();
+				t.integer('userId').notNullable().references('users.id').onDelete('RESTRICT');
+				t.text('title').notNullable();
+				t.text('subtitle');
+				t.text('body').notNullable();
+				t.timestamp('postedAt').defaultsTo(knex.raw('CURRENT_TIMESTAMP'));
+				t.timestamp('updatedAt').defaultsTo(knex.raw('CURRENT_TIMESTAMP'));
+				t.timestamp('deletedAt', true);
+				t.boolean('isVisible').defaultTo(true);
+			})
+		])
+	})
+	.then(function() {
 		return Promise.all([
 			// Junction table to create many-to-many relationships between tags & posts tables, & avoid adding duplicate entries
 			// It has an item for each time a given tag (from the 'tags' table) is assigned to a post (from the 'posts' table)
@@ -63,9 +67,13 @@ exports.down = function(knex, Promise) {
 	return Promise.all([
 		knex.schema.dropTableIfExists('tags_posts'),
 		knex.schema.dropTableIfExists('slugs')
-	]).then(function() {
-		return knex.schema.dropTableIfExists('posts');
-	}).then(function() {
+	])
+	.then(function() {
+		return Promise.all([
+			knex.schema.dropTableIfExists('posts')
+		]);
+	})
+	.then(function() {
 		return Promise.all([
 			knex.schema.dropTableIfExists('users'),
 			knex.schema.dropTableIfExists('tags')

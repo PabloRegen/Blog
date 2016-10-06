@@ -1,0 +1,12 @@
+{
+	"database": {
+		"hostname": "localhost",
+		"username": "your_database_user",
+		"password": "your_database_password",
+		"database": "myapp_test"
+	},
+	"listen": {
+		"host": "0.0.0.0",
+		"port": 8000
+	}
+}

@@ -1,7 +1,3 @@
-// To insert the next value of the sequence into the serial column exclude the column from the list of columns in the INSERT statement
-// CURRENT_TIMESTAMP: sometimes is better to just make it NOT NULL and handle the current-time stuff in the code 
-// (eg. issues: updating rows or work in the wrong timezone)
-
 'use strict';
 
 exports.up = function(knex, Promise) {
@@ -54,8 +50,8 @@ exports.up = function(knex, Promise) {
 				t.text('name').notNullable();
 				t.boolean('isCurrent').defaultTo(false);
 			})
-		])
-	})
+		]);
+	});
 };
 
 
