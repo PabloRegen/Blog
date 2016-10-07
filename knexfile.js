@@ -23,3 +23,12 @@ module.exports = {
     searchPath: 'knex,public'
     */
 };
+
+
+/*
+As per http://knexjs.org/#knexfile:
+module.exports = {
+  client: 'pg',
+  connection: process.env.DATABASE_URL || { user: 'me', database: 'my_app' }
+};
+*/
