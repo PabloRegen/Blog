@@ -75,7 +75,7 @@ app.post('/signup', (req, res) => {
     console.log(req.body);
     console.log(username, email, password, confirm_password);
 
-    var signup_validator = require('./lib/validator/signup.js');
+    var signup_validator = require('./lib/validators/signup.js');
     var signup_store = require('./lib/store/signup.js');
 
     Promise.try(function() {
@@ -102,7 +102,7 @@ app.post('/signin', (req, res) => {
     console.log(req.body);
     console.log(usernameOrEmail, password);
 
-    var signin_validator = require('./lib/validator/signin.js');
+    var signin_validator = require('./lib/validators/signin.js');
 
     Promise.try(function() {
         return function(usernameOrEmail, password) {
@@ -124,7 +124,7 @@ app.post('/profile', (req, res) => {
     console.log(req.body);
     console.log(name, bio, userPic);
 
-    var profile_validator = require('./lib/validator/profile.js');
+    var profile_validator = require('./lib/validators/profile.js');
     var profile_store = require('./lib/store/profile.js');
 
     Promise.try(function() {
@@ -153,11 +153,21 @@ app.post('/post_create', (req, res) => {
     console.log(req.body);
     console.log(title, subtitle, body, postPic);
 
-    var postCreate = require('./lib/store/post_create.js');
+    // var postCreate = require('./lib/store/post_create.js');
+
+    // Promise.try(function() {
+    //     return function(title, subtitle, body, postPic) {
+    //         return postCreate(title, subtitle, body, postPic);
+    //     }
+    //     .then(function() {
+    //         res.send({title: title, subtitle: subtitle, body: body, postPic: postPic});
+    //     })
+    //     .catch((e) => console.error('Error!', e));
+    // })
 
     Promise.try(function() {
         return function(title, subtitle, body, postPic) {
-            return postCreate(title, subtitle, body, postPic);
+            return knex('posts').insert([{title: title}, {subtitle: subtitle}, {body: body}]);
         }
         .then(function() {
             res.send({title: title, subtitle: subtitle, body: body, postPic: postPic});

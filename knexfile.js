@@ -7,11 +7,10 @@ module.exports = {
     client: 'postgresql',
     connection: {
         host:     config.database.hostname,
+        database: config.database.database,
         user:     config.database.username,
-        password: config.database.password,
-        database: config.database.database
-    }
-    /*
+        password: config.database.password
+    },
     pool: {
         min: 2,
         max: 10
@@ -19,11 +18,7 @@ module.exports = {
     migrations: {
         tableName: 'knex_migrations'
     }
-    acquireConnectionTimeout:
-    searchPath: 'knex,public'
-    */
 };
-
 
 /*
 As per http://knexjs.org/#knexfile:

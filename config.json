@@ -1,9 +1,9 @@
 {
 	"database": {
 		"hostname": "localhost",
-		"username": "your_database_user",
-		"password": "your_database_password",
-		"database": "myapp_test"
+		"username": "blog",
+		"password": "felicidad",
+		"database": "blog"
 	},
 	"listen": {
 		"host": "0.0.0.0",
