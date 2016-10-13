@@ -5,37 +5,36 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const rfr = require('rfr');
+const scrypt = require('scrypt-for-humans');
+const checkit = require('checkit');
+const expressPromiseRouter = require('express-promise-router');
 // const bhttp = require('bhttp');
 // const multer  = require('multer'); // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
 // let upload = multer({ dest: 'uploads/' });
 
+let config = require('./config.json');
+
+let port = (process.env.PORT != null) ? process.env.PORT : config.listen.port;
+
+let app = express();
+
+let router = expressPromiseRouter();
+
+/* if using router signup */
+// const signup = require('./router/signup');
+// app.use('/signup', signup);
+
 /* Database setup */
 // let environment = (process.env.NODE_ENV != null) ? process.env.NODE_ENV : 'development';
 let knexfile = rfr('knexfile');
-let knex = require('knex')(knexfile)
-
-
-// // use checkit -> https://www.npmjs.com/package/checkit
-// const signup_validator = require('./services/signup_validator.js');
-// const profile_validator = require('./services/profile_validator.js');
-
-
-let config = require('./config.json');
-
-let app = express();
+let knex = require('knex')(knexfile);
 
 app.set('view engine', 'pug');
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, './public/images'))); // site picture
-app.use(express.static(path.join(__dirname, './public/styles'))); // css files
+app.use(express.static(path.join(__dirname, './public/images')));
+app.use(express.static(path.join(__dirname, './public/styles')));
 
-// to be used later:
-// var renderSomethingLater = function() {
-//  return {
-//      key: 'value', 
-//  };
-// };
 
 app.get('/', (req, res) => {
     res.render('./home');
@@ -66,119 +65,86 @@ app.get('/post_read', (req, res) => {
 });
 
 
-app.post('/signup', (req, res) => {
-	const username = req.body.username;
-    const email = req.body.email;
-    const password = req.body.password;
-    const confirm_password = req.body.confirm_password;
-
+app.post('/signup', (req, res) => { // previously app.post
     console.log(req.body);
-    console.log(username, email, password, confirm_password);
+    console.log(req.body.username, req.body.email, req.body.password, req.body.confirm_password);
 
-    var signup_validator = require('./lib/validators/signup.js');
-    var signup_store = require('./lib/store/signup.js');
-
-    Promise.try(function() {
-        // validate data
-        return function(username, email, password) {
-            return signup_validator(username, email, password);
-        }
-        // store data
-        .then(function(username, email, password) {
-            return signup_store(username, email, password);
-        })
-        .then(function() {
-            res.render('./land');
-        })
-        .catch((e) => console.error('Error!', e));
-    })
+    return Promise.try(() => {
+        return checkit({
+            username: ['required', 'alphaDash', 'different:username'],
+            email: ['required', 'email', function(val) {
+                return knex('users').where('email', '=', val).then(function(resp) {
+                    if (resp.length > 0) throw new Error('The email address is already in use.')
+                })
+            }],
+            password: 'required',
+            confirm_password: ['required', 'matchesField:password']
+        }).run(req.body);
+    }).then(() => {
+        return scrypt.hash(req.body.password);
+    }).then((hash) => {
+        return knex('users').insert({
+            username: req.body.username,
+            email: req.body.email,
+            pwHash: hash
+        });
+    }).then(() => {
+        res.render('./land'); // res.redirect('/dashboard');
+    });
 });
 
 app.post('/signin', (req, res) => {
-    const usernameOrEmail = req.body.usernameOrEmail;
-    const password = req.body.password;
-    // const stay_signed = req.body.stay_signed;
-
     console.log(req.body);
-    console.log(usernameOrEmail, password);
+    console.log(req.body.usernameOrEmail, req.body.password);
 
-    var signin_validator = require('./lib/validators/signin.js');
-
-    Promise.try(function() {
-        return function(usernameOrEmail, password) {
-            return signin_validator(usernameOrEmail, password);
-        }
-        .then(function() {
-            res.send({usernameOrEmail: usernameOrEmail, pass: password});
-        })
-        .catch((e) => console.error('Error!', e));
-    })
-
+    return Promise.try(() => {
+        return function() {
+            let usernameOrEmailCheck = knex('users').where('username', req.body.usernameOrEmail).orWhere('email', req.body.usernameOrEmail);
+            // check if username or email exist
+            if (usernameOrEmailCheck.length === 0) {
+                return 'The username or email does not exist';
+            // check if password is correct for this username or email
+            } else if (req.body.password !== usernameOrEmailCheck.select('psHash')) {
+                return 'The password does not match the username or email';
+            } else {
+                // signin & display page after signin
+            }
+        };
+    }).then(() => {
+        res.send({usernameOrEmail: req.body.usernameOrEmail, pass: req.body.password});
+    });
 });
 
 app.post('/profile', (req, res) => {
-    const name = req.body.name;
-    const bio = req.body.bio;
-    const userPic = req.body.userPic;
-
     console.log(req.body);
-    console.log(name, bio, userPic);
+    console.log(req.body.name, req.body.bio, req.body.userPic);
 
-    var profile_validator = require('./lib/validators/profile.js');
-    var profile_store = require('./lib/store/profile.js');
-
-    Promise.try(function() {
-        // validate data
-        return function(name, bio, userPic) {
-            return profile_validator(name, bio, userPic);
-        }
-        // store data
-        .then(function(name, bio, userPic) {
-            return profile_store(name, bio, userPic);
-        })
-        .then(function() {
-            res.send({name: name, bio: bio, userPic: userPic});
-        })
-        .catch((e) => console.error('Error!', e));
-    })
-
+    return Promise.try(() => {
+        return knex('users').insert({
+            name: req.body.name, 
+            bio: req.body.bio, 
+            userPic: req.body.userPic
+        });
+    }).then(() => {
+        res.send({name: req.body.name, bio: req.body.bio, userPic: req.body.userPic});
+    });
 });
 
 app.post('/post_create', (req, res) => {
-    const title = req.body.title;
-    const subtitle = req.body.subtitle;
-    const body = req.body.body;
-    const postPic = req.body.postPic;
-
     console.log(req.body);
-    console.log(title, subtitle, body, postPic);
+    console.log(req.body.title, req.body.subtitle, req.body.body, req.body.postPic);
 
-    // var postCreate = require('./lib/store/post_create.js');
-
-    // Promise.try(function() {
-    //     return function(title, subtitle, body, postPic) {
-    //         return postCreate(title, subtitle, body, postPic);
-    //     }
-    //     .then(function() {
-    //         res.send({title: title, subtitle: subtitle, body: body, postPic: postPic});
-    //     })
-    //     .catch((e) => console.error('Error!', e));
-    // })
-
-    Promise.try(function() {
-        return function(title, subtitle, body, postPic) {
-            return knex('posts').insert([{title: title}, {subtitle: subtitle}, {body: body}]);
-        }
-        .then(function() {
-            res.send({title: title, subtitle: subtitle, body: body, postPic: postPic});
-        })
-        .catch((e) => console.error('Error!', e));
-    })
-
+    return Promise.try(() => {
+        return knex('posts').insert({
+            title: req.body.title, 
+            subtitle: req.body.subtitle, 
+            body: req.body.body
+        });
+    }).then(() => {
+        res.send({title: req.body.title, subtitle: req.body.subtitle, body: req.body.body, postPic: req.body.postPic});
+    });
 });
 
-
-let port = (process.env.PORT != null) ? process.env.PORT : config.listen.port;
 
 app.listen(port, () => {
     console.log('Server running at port ' + port);
