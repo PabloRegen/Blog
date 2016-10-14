@@ -12,17 +12,17 @@ let router = expressPromiseRouter();
 let knexfile = rfr('knexfile');
 let knex = require('knex')(knexfile);
 
-router.use('/url', function (req, res) {
+router.use('/signup', function (req, res) {
     return Promise.reject();
 })
 
-router.use('/url', function (req, res) {
+router.use('/signup', function (req, res) {
     // equivalent to calling next() 
     return Promise.resolve('next');
 });
 
 // Or use this one instead?
-router.use('/url', function (req, res) {
+router.use('/signup', function (req, res) {
     // equivalent to calling next('route') 
     return Promise.resolve('route');
 
@@ -39,12 +39,12 @@ router.post('/signup', (req, res) => { // previously app.post
     return Promise.try(() => {
         return checkit({
             username: ['required', 'alphaDash', 'different:username'],
-            email: ['required', 'email', function(val) {
-                return knex('users').where('email', '=', val).then(function(resp) {
+            email: ['required', 'email', (req.body.email) => {
+                return knex('users').where('email', '=', req.body.email).then((resp) => {
                     if (resp.length > 0) throw new Error('The email address is already in use.')
                 })
             }],
-            password: 'required',
+            password: ['required', 'minLength:8', 'maxLength:1024'],
             confirm_password: ['required', 'matchesField:password']
         }).run(req.body);
     }).then(() => {

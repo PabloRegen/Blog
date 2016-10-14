@@ -35,6 +35,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, './public/images')));
 app.use(express.static(path.join(__dirname, './public/styles')));
 
+/* error handling */
+// app.use(function(err, req, res, next)
+//     if(err.status != null) {
+//         var statusCode = err.status;
+//     } else {
+//         var statusCode = 500;
+//     }
+
+//     res.status(statusCode).send(err.message);
+// }
 
 app.get('/', (req, res) => {
     res.render('./home');
@@ -65,19 +75,19 @@ app.get('/post_read', (req, res) => {
 });
 
 
-app.post('/signup', (req, res) => { // previously app.post
+app.post('/signup', (req, res) => {
     console.log(req.body);
     console.log(req.body.username, req.body.email, req.body.password, req.body.confirm_password);
 
     return Promise.try(() => {
         return checkit({
             username: ['required', 'alphaDash', 'different:username'],
-            email: ['required', 'email', function(val) {
-                return knex('users').where('email', '=', val).then(function(resp) {
+            email: ['required', 'email', (req.body.email) => {
+                return knex('users').where('email', '=', req.body.email).then((resp) => {
                     if (resp.length > 0) throw new Error('The email address is already in use.')
                 })
             }],
-            password: 'required',
+            password: ['required', 'minLength:8', 'maxLength:1024'],
             confirm_password: ['required', 'matchesField:password']
         }).run(req.body);
     }).then(() => {
@@ -98,17 +108,14 @@ app.post('/signin', (req, res) => {
     console.log(req.body.usernameOrEmail, req.body.password);
 
     return Promise.try(() => {
-        return function() {
-            let usernameOrEmailCheck = knex('users').where('username', req.body.usernameOrEmail).orWhere('email', req.body.usernameOrEmail);
-            // check if username or email exist
-            if (usernameOrEmailCheck.length === 0) {
+        return () => {
+            if ((knex('users').where('username', req.body.usernameOrEmail).orWhere('email', req.body.usernameOrEmail)).length === 0) {
                 return 'The username or email does not exist';
-            // check if password is correct for this username or email
-            } else if (req.body.password !== usernameOrEmailCheck.select('psHash')) {
-                return 'The password does not match the username or email';
-            } else {
-                // signin & display page after signin
             }
+            // WRONG!!! I'm comparing a password against a hash!!!
+            if (knex('users').where('username', req.body.usernameOrEmail).orWhere('email', req.body.usernameOrEmail).select('psHash') !== req.body.password) {
+                return 'The password does not match the username or email';
+            }  
         };
     }).then(() => {
         res.send({usernameOrEmail: req.body.usernameOrEmail, pass: req.body.password});
