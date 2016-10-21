@@ -1,11 +1,16 @@
 'use strict';
 
-// const expressPromiseRouter = require('express-promise-router');
-// let router = expressPromiseRouter();
 const express = require('express');
-let router = express.Router();
+const path = require('path');
+const expressPromiseRouter = require('express-promise-router');
 
-router.get('/routes/home', (req, res) => {
+let router = expressPromiseRouter();
+
+// router.set('view engine', 'pug');
+
+router.use(express.static(path.join(__dirname, './public')));
+
+router.get('/', (req, res) => {
 	res.render('./home');
 });
 
