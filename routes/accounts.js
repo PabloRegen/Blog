@@ -1,43 +1,30 @@
 'use strict';
 
-const express = require('express');
-const path = require('path');
-const Promise = require('bluebird');
-const bodyParser = require('body-parser');
-// const rfr = require('rfr');
-const scrypt = require('scrypt-for-humans');
-const checkit = require('checkit');
 const expressPromiseRouter = require('express-promise-router');
-
-let router = expressPromiseRouter();
-
-// router.set('view engine', 'pug');
-
-router.use(bodyParser.urlencoded({ extended: true }));
-
-router.use(express.static(path.join(__dirname, './public')));
+const Promise = require('bluebird');
+const checkit = require('checkit');
+const scrypt = require('scrypt-for-humans');
+// const multer  = require('multer'); // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
+// let upload = multer({ dest: 'uploads/' });
+// const bhttp = require('bhttp');
 
 module.exports = function(knex) {
-    // let router = expressPromiseRouter();
+    let router = expressPromiseRouter();
 
     /* signup */
     router.get('/signup', (req, res) => {
-        res.render('./accounts/signup');
+        res.render('accounts/signup');
     });
 
     router.post('/signup', (req, res) => {
-        let username = req.body.username
-        let email = req.body.email
+        // let username = req.body.username;
+        let email = req.body.email;
         console.log(req.body);
         console.log(req.body.username, req.body.email, req.body.password, req.body.confirm_password);
 
         return Promise.try(() => {
             return checkit({
-                username: ['required', 'alphaDash', 'different:username', (username) => {
-                    if (req.body.username[0] === ' ') {
-                        throw new Error('The username can not start with a space.');
-                    }
-                }],
+                username: ['required', 'alphaDash', 'different:username'],
                 email: ['required', 'email', (email) => {
                     return knex('users').where({email: req.body.email}).then((users) => {
                         if (users.length > 0) {
@@ -57,13 +44,13 @@ module.exports = function(knex) {
                 pwHash: hash
             });
         }).then(() => {
-            res.render('./land'); // res.redirect('/dashboard');
+            res.render('land'); // res.redirect('/dashboard');
         });
     });
 
     /* signin */
     router.get('/signin', (req, res) => {
-        res.render('./accounts/signin');
+        res.render('accounts/signin');
     });
 
     router.post('/signin', (req, res) => {
@@ -89,7 +76,7 @@ module.exports = function(knex) {
 
     /* profile */
     router.get('/profile', (req, res) => {
-        res.render('./accounts/profile');
+        res.render('accounts/profile');
     });
 
     router.post('/profile', (req, res) => {

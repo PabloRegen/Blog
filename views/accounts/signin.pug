@@ -2,11 +2,11 @@ doctype html
 html
 	head
 		title Sign In - Blog
-		link(href='index.css' type='text/css' rel='stylesheet')
+		link(href='../css/index.css' type='text/css' rel='stylesheet')
 body
 	div.main
 		h1 Sign in
-		form(action='/signin' method='post')
+		form(method='post')
 			p 
 				|Username or Email <br/>
 				input(type='text' name='usernameOrEmail' maxlength='50' required)
@@ -20,7 +20,7 @@ body
 				input(type='submit' value='Sign in')
 		p
 			|New to Blog? 
-			a(href='/signup') Create your Blog account
+			a(href='signup') Create your Blog account
 		p 
 			|Forgot your password? (add link to page)
 		p

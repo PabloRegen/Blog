@@ -1,28 +1,17 @@
 'use strict';
 
-const express = require('express');
-const path = require('path');
-const Promise = require('bluebird');
-const bodyParser = require('body-parser');
-// const rfr = require('rfr');
-// const scrypt = require('scrypt-for-humans');
-// const checkit = require('checkit');
 const expressPromiseRouter = require('express-promise-router');
-
-let router = expressPromiseRouter();
-
-// router.set('view engine', 'pug');
-
-router.use(bodyParser.urlencoded({ extended: true }));
-
-router.use(express.static(path.join(__dirname, './public')));
+const Promise = require('bluebird');
+// const multer  = require('multer'); // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
+// let upload = multer({ dest: 'uploads/' });
+// const bhttp = require('bhttp');
 
 module.exports = function(knex) {
-    // let router = expressPromiseRouter();
-
+    let router = expressPromiseRouter();
+ 
     /* create */
     router.get('/create', (req, res) => {
-        res.render('./posts/create');
+        res.render('posts/create');
     });
 
     router.post('/create', (req, res) => {
@@ -42,7 +31,7 @@ module.exports = function(knex) {
 
     /* edit */
     router.get('/:id/edit', (req, res) => {
-        res.render('./posts/edit');
+        res.render('posts/edit');
     });
 
     router.post('/:id/edit', (req, res) => {
@@ -51,7 +40,7 @@ module.exports = function(knex) {
 
     /* read */
     router.get('/:id', (req, res) => {
-        res.render('./posts/read');
+        res.render('posts/read');
     });
 
     /* delete */

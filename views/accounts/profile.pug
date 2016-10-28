@@ -2,11 +2,11 @@ doctype html
 html
 	head
 		title User profile - Blog
-		link(href='index.css' type='text/css' rel='stylesheet')
+		link(href='../css/index.css' type='text/css' rel='stylesheet')
 	body
 		div.main
 			h1 Create your user profile
-			form(action='/profile' method='post')
+			form(method='post')
 				p
 					|Name <br/>
 					input(type='text' name='name' maxlength='80')
