@@ -4,8 +4,7 @@ html
 		title Edit post - Blog
 	body
 		h1 Edit your blog post
-		form
-			// add this to the form(method='post')
+		form(action='/posts/edit' method='post')
 			p
 				|Title <br/>
 				input(type='text' name='title' required)

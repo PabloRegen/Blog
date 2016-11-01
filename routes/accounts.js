@@ -17,22 +17,22 @@ module.exports = function(knex) {
     });
 
     router.post('/signup', (req, res) => {
-        // let username = req.body.username;
-        let email = req.body.email;
         console.log(req.body);
         console.log(req.body.username, req.body.email, req.body.password, req.body.confirm_password);
 
         return Promise.try(() => {
             return checkit({
-                username: ['required', 'alphaDash', 'different:username'],
+                username: ['required', 'alphaDash'],
                 email: ['required', 'email', (email) => {
-                    return knex('users').where({email: req.body.email}).then((users) => {
+                    return Promise.try(() => {
+                        return knex('users').where({email: email});
+                    }).then((users) => {
                         if (users.length > 0) {
                             throw new Error('The email address is already in use.');
                         }
                     });
                 }],
-                password: ['required', 'minLength:8', 'maxLength:1024'],
+                password: ['required', 'minLength:8'],
                 confirm_password: ['required', 'matchesField:password']
             }).run(req.body);
         }).then(() => {
