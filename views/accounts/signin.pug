@@ -1,27 +1,26 @@
-doctype html
-html
-	head
-		title Sign In - Blog
-		link(href='/css/index.css' type='text/css' rel='stylesheet')
-body
-	div.main
-		h1 Sign in
-		form(action='/accounts/signin' method='post')
-			p 
-				|Username or Email <br/>
-				input(type='text' name='usernameOrEmail' required)
-			p 
-				|Password <br/>
-				input(type='password' name='password' required)
-			p
-				input(type='checkbox' name='stay_signed' checked)
-				|Stay signed in
-			p
-				input(type='submit' value='Sign in')
-		p
-			|New to Blog? 
-			a(href='/accounts/signup') Create your Blog account
+extends layout.pug
+
+block title
+	|signin 
+
+block main
+	h1 Sign in
+	form(action='/accounts/signin' method='post')
 		p 
-			|Forgot your password? (add link to page)
+			|Username or Email <br/>
+			input(type='text' name='usernameOrEmail' required)
+		p 
+			|Password <br/>
+			input(type='password' name='password' required)
 		p
-			a(href='/') Return to Blog.com
+			input(type='checkbox' name='stay_signed' checked)
+			|Stay signed in
+		p
+			input(type='submit' value='Sign in')
+	p
+		|New to Blog? 
+		a(href='/accounts/signup') Create your Blog account
+	p 
+		|Forgot your password? (add link to page)
+	p
+		a(href='/') Return to Blog.com

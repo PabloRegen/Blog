@@ -1,25 +1,26 @@
-doctype html
-html
-	head
-		title Create post - Blog
-	body
-		h1 Create your blog post
-		form(action='/posts/create' method='post')
-			p
-				|Title <br/>
-				input(type='text' name='title' required)
-			p
-				|Subtitle <br/>
-				textarea(name='subtitle')
-			p
-				|Body <br/>
-				textarea(name='body' placeholder='Your article goes here...')
-			p
-				|Add a picture <br/>
-				input(type='file' name='postPic')
-			p
-				input(type='button' value='Save post')
-			p
-				input(type='submit' value='Create post')
+extends layout.pug
+
+block title
+	|create post 
+
+block main
+	h1 Create your blog post
+	form(action='/posts/create' method='post')
 		p
-			a(href='/') Return to Blog.com
+			|Title <br/>
+			input(type='text' name='title' required)
+		p
+			|Subtitle <br/>
+			textarea(name='subtitle')
+		p
+			|Body <br/>
+			textarea(name='body' placeholder='Your article goes here...')
+		p
+			|Add a picture <br/>
+			input(type='file' name='postPic')
+		p
+			input(type='button' value='Save post')
+		p
+			input(type='submit' value='Create post')
+	p
+		a(href='/') Return to Blog.com

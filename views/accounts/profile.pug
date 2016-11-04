@@ -1,23 +1,22 @@
-doctype html
-html
-	head
-		title User profile - Blog
-		link(href='/css/index.css' type='text/css' rel='stylesheet')
-	body
-		div.main
-			h1 Create your user profile
-			form(action='/accounts/profile' method='post')
-				p
-					|Name <br/>
-					input(type='text' name='name')
-				p
-					|Bio <br/>
-					textarea(name='bio' placeholder='Enter your bio...')
-				p
-					|Add your picture <br/>
-					input(type='file' name='userPic')
-				p
-					input(type='submit' value='Create profile')
+extends layout.pug
 
-			p
-				a(href='/') Return to Blog.com
+block title
+	|profile 
+
+block main
+	h1 Create your user profile
+	form(action='/accounts/profile' method='post')
+		p
+			|Name <br/>
+			input(type='text' name='name')
+		p
+			|Bio <br/>
+			textarea(name='bio' placeholder='Enter your bio...')
+		p
+			|Add your picture <br/>
+			input(type='file' name='userPic')
+		p
+			input(type='submit' value='Create profile')
+
+	p
+		a(href='/') Return to Blog.com

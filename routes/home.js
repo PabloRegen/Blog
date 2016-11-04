@@ -1,8 +1,6 @@
 'use strict';
 
-const expressPromiseRouter = require('express-promise-router');
-
-let router = expressPromiseRouter();
+let router = require('express-promise-router')();
 
 router.get('/', (req, res) => {
 	res.render('home');

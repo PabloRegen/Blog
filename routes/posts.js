@@ -1,13 +1,12 @@
 'use strict';
 
-const expressPromiseRouter = require('express-promise-router');
 const Promise = require('bluebird');
 // const multer  = require('multer'); // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
 // let upload = multer({ dest: 'uploads/' });
 // const bhttp = require('bhttp');
 
 module.exports = function(knex) {
-    let router = expressPromiseRouter();
+    let router = require('express-promise-router')();
  
     /* create */
     router.get('/create', (req, res) => {

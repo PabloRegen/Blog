@@ -1,6 +1,5 @@
 'use strict';
 
-const expressPromiseRouter = require('express-promise-router');
 const Promise = require('bluebird');
 const checkit = require('checkit');
 const scrypt = require('scrypt-for-humans');
@@ -9,7 +8,7 @@ const scrypt = require('scrypt-for-humans');
 // const bhttp = require('bhttp');
 
 module.exports = function(knex) {
-    let router = expressPromiseRouter();
+    let router = require('express-promise-router')();
 
     /* signup */
     router.get('/signup', (req, res) => {

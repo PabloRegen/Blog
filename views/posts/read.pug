@@ -1,22 +1,23 @@
-doctype html
-html
-	head
-		title Read - Blog
-	body
-		h1 Blog post
-		p contributor pic
-		p contributor name or username
-		p contributor bio
-		p post date
-		p post title
-		p post header
-		p post picture
-		p post body
-		p
-			input(type='button' value='Like')
-		p
-			|New to Blog? 
-			a(href='/accounts/signup') Create your Blog account
-		p
-			|Already have an account? 
-			a(href='/accounts/signin') Sign in
+extends layout.pug
+
+block title
+	|read 
+
+block main
+	h1 Blog post
+	p contributor pic
+	p contributor name or username
+	p contributor bio
+	p post date
+	p post title
+	p post header
+	p post picture
+	p post body
+	p
+		input(type='button' value='Like')
+	p
+		|New to Blog? 
+		a(href='/accounts/signup') Create your Blog account
+	p
+		|Already have an account? 
+		a(href='/accounts/signin') Sign in
