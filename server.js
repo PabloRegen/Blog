@@ -3,17 +3,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
-const config = require('./config.json');
-const util = require('util');
-// const errors = require('errors');
+const rfr = require('rfr');
+// const util = require('util');
 
-let port = (config.listen.port != null) ? config.listen.port : 8000
+const errorHandler = rfr('middleware/error-handler');
+const errors = rfr('lib/errors');
+
+let config = require('./config.json');
 
 /* Database setup */
-// let environment = (process.env.NODE_ENV != null) ? process.env.NODE_ENV : 'development';
+let environment = (process.env.NODE_ENV != null) ? process.env.NODE_ENV : 'development';
 let knex = require('knex')(require('./knexfile'));
 
 let app = express();
+
+/* Express configuration */
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, 'public')));
@@ -24,27 +28,18 @@ app.use('/', require('./routes/home'));
 app.use('/accounts', require('./routes/accounts')(knex));
 app.use('/posts', require('./routes/posts')(knex));
 
-/* error handling */
-app.use((err, req, res, next) => {
-  console.log(util.inspect(err, {depth: null, showHidden: true}));
-  res.send("error");
+/* Default 404 handler */
+app.use((req, res, next) => {
+	next(new errors.NotFoundError('--- Im server.js L33 - Page not found ---'));
 });
 
-// app.use((err, req, res, next) => {
-//     let statusCode = err.status !== null ? err.status : 500;
-//     res.status(statusCode).send(err.message);
-// });
+/* error handling */
+app.use(errorHandler(environment));
 
-// How do I setup an error handler? http://expressjs.com/en/guide/error-handling.html
 // app.use((err, req, res, next) => {
-//   console.error(err.stack);
-//   res.status(500).send('Something broke!');
+//   console.log(util.inspect(err, {depth: null, showHidden: true}));
+//   res.send('error');
 // });
-
-// How do I handle 404 responses? http://expressjs.com/en/starter/faq.html
-// app.use(function (req, res, next) {
-//   res.status(404).send('Sorry cant find that!')
-// })
 
 app.listen(config.listen.port, () => {
     console.log('Server running at port ' + config.listen.port);

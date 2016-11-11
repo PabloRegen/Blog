@@ -15,6 +15,7 @@
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "checkit": "^0.7.0",
+    "create-error": "^0.3.1",
     "express": "^4.14.0",
     "express-promise-router": "^1.1.1",
     "knex": "^0.12.1",

@@ -3,9 +3,12 @@
 const Promise = require('bluebird');
 const checkit = require('checkit');
 const scrypt = require('scrypt-for-humans');
+const rfr = require('rfr');
 // const multer  = require('multer'); // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
 // let upload = multer({ dest: 'uploads/' });
 // const bhttp = require('bhttp');
+
+const errors = rfr('lib/errors');
 
 module.exports = function(knex) {
     let router = require('express-promise-router')();
@@ -27,7 +30,7 @@ module.exports = function(knex) {
                         return knex('users').where({email: email});
                     }).then((users) => {
                         if (users.length > 0) {
-                            throw new Error('The email address is already in use.');
+                            throw new errors.ValidationError('The email address is already in use.');
                         }
                     });
                 }],
@@ -60,7 +63,7 @@ module.exports = function(knex) {
             return knex('users').where('username', req.body.usernameOrEmail).orWhere('email', req.body.usernameOrEmail);
         }).then((user) => {
             if (user.length === 0) {
-                throw new Error('The username or email does not exist');
+                throw new errors.NotFoundError('The username or email does not exist');
             }
             return scrypt.verifyHash(req.body.password, user[0].pwHash);
         // }).catch(scrypt.PasswordError, (err) => {
