@@ -63,7 +63,8 @@ module.exports = function(knex) {
             return knex('users').where('username', req.body.usernameOrEmail).orWhere('email', req.body.usernameOrEmail);
         }).then((user) => {
             if (user.length === 0) {
-                throw new errors.NotFoundError('The username or email does not exist');
+                //throw new errors.NotFoundError('The username or email does not exist');
+                throw new Error('The username or email does not exist');
             }
             return scrypt.verifyHash(req.body.password, user[0].pwHash);
         // }).catch(scrypt.PasswordError, (err) => {

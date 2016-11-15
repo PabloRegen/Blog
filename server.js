@@ -27,10 +27,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', require('./routes/home'));
 app.use('/accounts', require('./routes/accounts')(knex));
 app.use('/posts', require('./routes/posts')(knex));
-
+ 
 /* Default 404 handler */
 app.use((req, res, next) => {
 	next(new errors.NotFoundError('--- Im server.js L33 - Page not found ---'));
+	// next(new Error('--- Im server.js L33 - Page not found ---'));
 });
 
 /* error handling */
