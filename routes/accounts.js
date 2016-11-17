@@ -9,6 +9,7 @@ const rfr = require('rfr');
 // const bhttp = require('bhttp');
 
 const errors = rfr('lib/errors');
+const validatePassword = rfr('lib/validate-password');
 
 module.exports = function(knex) {
     let router = require('express-promise-router')();
@@ -24,17 +25,25 @@ module.exports = function(knex) {
 
         return Promise.try(() => {
             return checkit({
-                username: ['required', 'alphaDash'],
+                username: ['required', (username) => {
+                    return Promise.try(() => {
+                        return knex('users').where({username: username});
+                    }).then((users) => {
+                        if (users.length > 0) {
+                            throw new errors.ValidationError('This username is taken.');
+                        }
+                    });                                            
+                }],
                 email: ['required', 'email', (email) => {
                     return Promise.try(() => {
                         return knex('users').where({email: email});
                     }).then((users) => {
                         if (users.length > 0) {
-                            throw new errors.ValidationError('The email address is already in use.');
+                            throw new errors.ValidationError('This email address is already in use.');
                         }
                     });
                 }],
-                password: ['required', 'minLength:8'],
+                password: ['required', validatePassword],
                 confirm_password: ['required', 'matchesField:password']
             }).run(req.body);
         }).then(() => {
@@ -47,7 +56,10 @@ module.exports = function(knex) {
             });
         }).then(() => {
             res.render('land'); // res.redirect('/dashboard');
+        }).catch(checkit.Error, (err) => {
+            throw new errors.ValidationError('One or more fields are invalid.', {errors: err.errors});
         });
+
     });
 
     /* signin */
@@ -60,21 +72,30 @@ module.exports = function(knex) {
         console.log(req.body.usernameOrEmail, req.body.password);
 
         return Promise.try(() => {
+            return checkit({
+                usernameOrEmail: ['required'],
+                password: ['required']
+            }).run(req.body);
+        }).then(() => {
             return knex('users').where('username', req.body.usernameOrEmail).orWhere('email', req.body.usernameOrEmail);
         }).then((user) => {
             if (user.length === 0) {
                 //throw new errors.NotFoundError('The username or email does not exist');
-                throw new Error('The username or email does not exist');
+                throw new Error('Invalid username or email.');
             }
             return scrypt.verifyHash(req.body.password, user[0].pwHash);
-        // }).catch(scrypt.PasswordError, (err) => {
-        //     console.log('The password does not match the username or email');
         }).then(() => {
-            // if (!isValid) {
-            //     throw new Error('The password does not match the username or email');
-            // }
-            res.send({usernameOrEmail: req.body.usernameOrEmail, pass: req.body.password});
+            res.send({usernameOrEmail: req.body.usernameOrEmail, pass: req.body.password}); 
+        }).catch(checkit.Error, (err) => {
+            throw new errors.ValidationError('One or more fields are missing.', {errors: err.errors});
+        }).catch(scrypt.PasswordError, (err) => {
+            throw err;
+            // throw err('Invalid password.');
+            // err.message = 'Invalid password.'; throw err(err.message);
+            // throw new Error('Invalid password.');
+            // throw new errors.UnauthorizedError('Invalid password.');
         });
+
     });
 
     /* profile */
