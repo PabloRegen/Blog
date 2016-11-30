@@ -29,8 +29,10 @@ module.exports = function(environment) {
     //         		<p>err: ${err}</p>
     //     		`;
 
-				res.send(errorResponse);
-				// res.send(err)
+				// res.send(errorResponse);
+				res.send(err)
+				// res.send(err.message)
+
 			} else {
 				res.send(http.STATUS_CODES[err.statusCode]);
 			}
