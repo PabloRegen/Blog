@@ -19,19 +19,19 @@ let config = require('./config.json');
 
 /* Database setup */
 let environment = (process.env.NODE_ENV != null) ? process.env.NODE_ENV : 'development';
-let knexfile = require('./knexfile');
-let knex = require('knex')(knexfile);
+let knex = require('knex')(require('./knexfile'));
 
 let app = express();
 
 /* Session setup */
+// create a new express-session middleware and app.use it so that it processes every request, attaching session data where needed
 app.use(expressSession({
-	store: new KnexSessionStore({
-		knex: knex
-	}),
+	secret: config.sessions.secret,
 	resave: false, // don't save session if unmodified
 	saveUninitialized: false, // don't create session until something stored
-	secret: config.sessions.secret,
+	store: new KnexSessionStore({
+		knex: knex
+	}),	
 	cookie: {
 		// expires: Date.now() + (config.sessions.cookieExpiry * 1000),
 		maxAge: (config.sessions.cookieExpiry * 1000)

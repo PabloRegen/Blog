@@ -21,14 +21,6 @@ module.exports = function(environment) {
 					err: err
 				};
 
-				// let errorResponse = `
-				// 	<h2>Error</h2>
-    //         		<p>name: ${err.name}</p>
-    //         		<p>message: ${err.message}</p>
-    //         		<p>statusCode: ${err.statusCode}</p>
-    //         		<p>err: ${err}</p>
-    //     		`;
-
 				// res.send(errorResponse);
 				res.send(err)
 				// res.send(err.message)

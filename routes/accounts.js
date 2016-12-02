@@ -4,13 +4,13 @@ const Promise = require('bluebird');
 const checkit = require('checkit');
 const scrypt = require('scrypt-for-humans');
 const rfr = require('rfr');
-var _ = require('underscore');
 // const multer  = require('multer'); // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
 // let upload = multer({ dest: 'uploads/' });
 // const bhttp = require('bhttp');
 
 const errors = rfr('lib/errors');
 const validatePassword = rfr('lib/validate-password');
+const requireSignin = rfr('middleware/require-signin');
 
 module.exports = function(knex) {
     let router = require('express-promise-router')();
@@ -31,7 +31,7 @@ module.exports = function(knex) {
                         return knex('users').where({username: username});
                     }).then((users) => {
                         if (users.length > 0) {
-                            throw new errors.ValidationError('The username is taken.');
+                            throw new errors.ValidationError('The username is taken');
                         }
                     });                                            
                 }],
@@ -40,7 +40,7 @@ module.exports = function(knex) {
                         return knex('users').where({email: email});
                     }).then((users) => {
                         if (users.length > 0) {
-                            throw new errors.ValidationError('The email address is already in use.');
+                            throw new errors.ValidationError('The email address is already in use');
                         }
                     });
                 }],
@@ -79,24 +79,24 @@ module.exports = function(knex) {
             }).run(req.body);
         }).then(() => {
             return knex('users').where({username: req.body.usernameOrEmail}).orWhere({email: req.body.usernameOrEmail});
-        }).then((user) => {
-            if (user.length === 0) {
-                throw new errors.NotFoundError('Invalid username or email.');
-            }
-            return scrypt.verifyHash(req.body.password, user[0].pwHash);
-        }).then(() => {
-            res.redirect('/posts/create'); 
+        }).then((users) => {
+            if (users.length === 0) {
+                throw new errors.NotFoundError('Invalid username or email'); // errors.AuthenticationError???
+            } else {
+                let user = users[0];
+
+                return Promise.try(() => {
+                    return scrypt.verifyHash(req.body.password, user.pwHash);
+                }).then(() => {
+                    /* Password was correct */
+                    req.session.userId = user.id;
+                    res.redirect('/posts/create');
+                }).catch(scrypt.PasswordError, (err) => {
+                    throw new errors.UnauthorizedError('Invalid password'); // errors.AuthenticationError???
+                });
         }).catch(checkit.Error, (err) => {
-            throw new errors.ValidationError('One or more fields are missing.', {errors: err.errors});
-
-            // $("#errors").html(err.map(function(val, key) {
-            //     return '<li>' + key + ': ' + val.first().message + '</li>';
-            // }).join(''));
-            
-        }).catch(scrypt.PasswordError, (err) => {
-            throw new errors.UnauthorizedError('Invalid password.');
+            throw new errors.ValidationError('One or more fields are missing', {errors: err.errors});
         });
-
     });
 
     /* profile */
