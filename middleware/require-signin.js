@@ -1,9 +1,8 @@
 'use strict';
 
-// const Promise = require('bluebird');
-// const router = require('express-promise-router')();
+const Promise = require('bluebird');
 
-module.exports = function() {  // is an argument needed?
+module.exports = function(knex) {
     return function(req, res, next) {
         return Promise.try(() => {
             if (req.session.userId == null) {
@@ -16,7 +15,7 @@ module.exports = function() {  // is an argument needed?
                     if (users.length === 0) {
                         /* User no longer exists */
                         req.session.destroy();
-                        res.redirect('/accounts/signin');
+                        res.redirect('/accounts/signup');
                     } else {
                         req.user = users[0];
                         next();

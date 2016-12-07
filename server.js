@@ -6,10 +6,6 @@ const path = require('path');
 const rfr = require('rfr');
 const expressSession = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(expressSession);
-// const Firebase = require('firebase');
-// const FirebaseTokenGenerator = require('firebase-token-generator');
-// const cors = require('cors');
-// const stripe = require('stripe');
 
 // const sessionHandler = rfr('middleware/session-handler')  // Will deal with removed users in the session handling middleware
 const errorHandler = rfr('middleware/error-handler');
@@ -33,8 +29,7 @@ app.use(expressSession({
 		knex: knex
 	}),	
 	cookie: {
-		// expires: Date.now() + (config.sessions.cookieExpiry * 1000),
-		maxAge: (config.sessions.cookieExpiry * 1000)
+		maxAge: (config.sessions.cookieExpiry) // currently 24hs
 	}
 }));
 
@@ -51,6 +46,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', require('./routes/home'));
 app.use('/accounts', require('./routes/accounts')(knex));
 app.use('/posts', require('./routes/posts')(knex));
+
+/* Set user as request-wide locals */
+// app.use((req, res, next) => {
+//     res.locals.user = req.user;
+//     next();
+// });
  
 /* Default 404 handler */
 app.use((req, res, next) => {

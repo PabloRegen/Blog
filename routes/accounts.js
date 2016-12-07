@@ -10,9 +10,9 @@ const rfr = require('rfr');
 
 const errors = rfr('lib/errors');
 const validatePassword = rfr('lib/validate-password');
-const requireSignin = rfr('middleware/require-signin');
 
 module.exports = function(knex) {
+    const requireSignin = rfr('middleware/require-signin')(knex);
     let router = require('express-promise-router')();
 
     /* signup */
@@ -89,22 +89,29 @@ module.exports = function(knex) {
                     return scrypt.verifyHash(req.body.password, user.pwHash);
                 }).then(() => {
                     /* Password was correct */
-                    req.session.userId = user.id;
+                    req.session.userId = user.id; // set req.session.userId for the current express session
                     res.redirect('/posts/create');
                 }).catch(scrypt.PasswordError, (err) => {
                     throw new errors.UnauthorizedError('Invalid password'); // errors.AuthenticationError???
                 });
+            }
         }).catch(checkit.Error, (err) => {
             throw new errors.ValidationError('One or more fields are missing', {errors: err.errors});
         });
     });
 
+    /* signout */
+    router.get('/signout', requireSignin, (req, res) => {
+        req.session.destroy();
+        res.redirect('/accounts/signin');
+    });
+
     /* profile */
-    router.get('/profile', (req, res) => {
+    router.get('/profile', requireSignin, (req, res) => {
         res.render('accounts/profile');
     });
 
-    router.post('/profile', (req, res) => {
+    router.post('/profile', requireSignin, (req, res) => {
         console.log(req.body);
         console.log(req.body.name, req.body.bio, req.body.userPic);
 
