@@ -21,6 +21,7 @@ module.exports = function(knex) {
 
         return Promise.try(() => {
             return knex('posts').insert({
+                userId: req.session.userId,
                 title: req.body.title, 
                 subtitle: req.body.subtitle, 
                 body: req.body.body
