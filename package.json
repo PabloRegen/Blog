@@ -27,6 +27,7 @@
     "pug": "^2.0.0-beta6",
     "rfr": "^1.2.3",
     "scrypt-for-humans": "^2.0.5",
+    "serve-favicon": "^2.3.2",
     "underscore": "^1.8.3"
   }
 }
