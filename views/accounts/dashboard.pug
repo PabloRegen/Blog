@@ -1,0 +1,17 @@
+extends ../layouts/layout.pug
+
+block title
+	|dashboard 
+
+block main
+	h1 Dashboard
+	p
+		a(href='/accounts/signup') Create a new post
+	p Your messages
+	p Your latest posts
+	p Your visitors
+	p Your most common referers
+	p People following you
+	p People you are following
+	p
+		a(href='/accounts/signout') Sign out

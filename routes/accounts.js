@@ -90,7 +90,7 @@ module.exports = function(knex) {
                 }).then(() => {
                     /* Password was correct */
                     req.session.userId = user.id; // set req.session.userId for the current express session
-                    res.redirect('/posts/create');
+                    res.redirect('/accounts/dashboard');
                 }).catch(scrypt.PasswordError, (err) => {
                     throw new errors.UnauthorizedError('Invalid password'); // errors.AuthenticationError???
                 });
@@ -104,6 +104,11 @@ module.exports = function(knex) {
     router.get('/signout', requireSignin, (req, res) => {
         req.session.destroy();
         res.redirect('/accounts/signin');
+    });
+
+    /* dashboard */
+    router.get('/dashboard', requireSignin, (req, res) => {
+        res.render('accounts/dashboard');
     });
 
     /* profile */
