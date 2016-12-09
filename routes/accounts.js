@@ -108,7 +108,25 @@ module.exports = function(knex) {
 
     /* dashboard */
     router.get('/dashboard', requireSignin, (req, res) => {
-        res.render('accounts/dashboard');
+        return Promise.try(() => {
+            return knex('posts').select('title').where({ userId: req.session.userId });
+        }).then((titles) => {
+            console.log(typeof titles, titles);
+
+            let postTitles;
+
+            if (titles.length === 0) {
+                postTitles === 'You haven\'t posted anything yet';
+            } else {
+                postTitles === titles[0].title;
+            }
+
+            // res.render('accounts/dashboard');
+            res.render('accounts/dashboard', {
+                user: req.user,
+                latestPosts: postTitles
+            });
+        });
     });
 
     /* profile */

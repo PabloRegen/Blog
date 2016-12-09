@@ -49,7 +49,7 @@ app.use('/', require('./routes/home'));
 app.use('/accounts', require('./routes/accounts')(knex));
 app.use('/posts', require('./routes/posts')(knex));
 
-/* Set user as request-wide locals */
+// /* Set user as request-wide locals */
 // app.use((req, res, next) => {
 //     res.locals.user = req.user;
 //     next();

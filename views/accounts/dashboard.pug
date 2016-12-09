@@ -5,10 +5,15 @@ block title
 
 block main
 	h1 Dashboard
+
+	if user != null
+		p Hi #{user.username}!
+	else
+		p Hi there!
 	p
 		a(href='/posts/create') Create a new post
 	p Your messages
-	p Your latest posts
+	p Your latest posts: #{latestPosts}
 	p Your visitors
 	p Your most common referers
 	p People following you
