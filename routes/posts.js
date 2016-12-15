@@ -1,14 +1,16 @@
 'use strict';
 
 const Promise = require('bluebird');
+const expressPromiseRouter = require('express-promise-router');
 const rfr = require('rfr');
 // const multer  = require('multer'); // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
 // let upload = multer({ dest: 'uploads/' });
 // const bhttp = require('bhttp');
 
+const requireSignin = rfr('middleware/require-signin');
+
 module.exports = function(knex) {
-    const requireSignin = rfr('middleware/require-signin')(knex);
-    let router = require('express-promise-router')();
+    let router = expressPromiseRouter();
  
     /* create */
     router.get('/create', requireSignin, (req, res) => {
@@ -17,7 +19,6 @@ module.exports = function(knex) {
 
     router.post('/create', requireSignin, (req, res) => {
         console.log(req.body);
-        console.log(req.body.title, req.body.subtitle, req.body.body, req.body.postPic);
 
         return Promise.try(() => {
             return knex('posts').insert({
@@ -33,20 +34,24 @@ module.exports = function(knex) {
 
     /* edit */
     router.get('/:id/edit', requireSignin, (req, res) => {
+        console.log('edit post ' + req.params.id);
         res.render('posts/edit');
     });
 
     router.post('/:id/edit', requireSignin, (req, res) => {
+        console.log('edit post ' + req.params.id);
         // do something
     });
 
     /* read */
     router.get('/:id', (req, res) => {
+        console.log('read post ' + req.params.id);
         res.render('posts/read');
     });
 
     /* delete */
     router.delete('/:id/delete', requireSignin, (req, res) => {
+        console.log('delete post ' + req.params.id);
         // do something
     });
 

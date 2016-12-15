@@ -14,6 +14,9 @@ block main
 		a(href='/posts/create') Create a new post
 	p Your messages
 	p Your latest posts: #{latestPosts}
+	ul
+		for posts in latestPosts
+			li= posts.title
 	p Your visitors
 	p Your most common referers
 	p People following you

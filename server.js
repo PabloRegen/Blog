@@ -20,8 +20,16 @@ let knex = require('knex')(require('./knexfile'));
 
 let app = express();
 
+/* Express configuration */
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+app.use(favicon(path.join(__dirname + '/public/images/favicon.ico')));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.urlencoded({ extended: true }));
+
 /* Session setup */
-// create a new express-session middleware and app.use it so that it processes every request, attaching session data where needed
+/* create a new express-session middleware and app.use it */
+/* so that it processes every request, attaching session data where needed */
 app.use(expressSession({
 	secret: config.sessions.secret,
 	resave: false, // don't save session if unmodified
@@ -34,29 +42,25 @@ app.use(expressSession({
 	}
 }));
 
-/* Express configuration */
-// app.disable('etag');
-app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'views'));
-app.use(favicon(path.join(__dirname + '/public/images/favicon.ico')));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({ extended: true }));
-
 // app.use(sessionHandler(???)); // Goes here?
+
+/* Fetch current user */
+app.use(rfr('middleware/fetch-current-user')(knex));
+
+/* Set user as request-wide locals */
+app.use(function(req, res, next) {
+	console.log('--> Set user as request-wide locals. req.user = ' + req.user);
+    res.locals.user = req.user;
+    next();
+});
 
 /* Route setup */
 app.use('/', require('./routes/home'));
 app.use('/accounts', require('./routes/accounts')(knex));
 app.use('/posts', require('./routes/posts')(knex));
 
-// /* Set user as request-wide locals */
-// app.use((req, res, next) => {
-//     res.locals.user = req.user;
-//     next();
-// });
- 
 /* Default 404 handler */
-app.use((req, res, next) => {
+app.use(function(req, res, next) {
 	next(new errors.NotFoundError('--- server.js: Page not found. ---'));
 });
 

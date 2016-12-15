@@ -1,6 +1,7 @@
 'use strict';
 
 const Promise = require('bluebird');
+const expressPromiseRouter = require('express-promise-router');
 const checkit = require('checkit');
 const scrypt = require('scrypt-for-humans');
 const rfr = require('rfr');
@@ -10,10 +11,10 @@ const rfr = require('rfr');
 
 const errors = rfr('lib/errors');
 const validatePassword = rfr('lib/validate-password');
+const requireSignin = rfr('middleware/require-signin');
 
 module.exports = function(knex) {
-    const requireSignin = rfr('middleware/require-signin')(knex);
-    let router = require('express-promise-router')();
+    let router = expressPromiseRouter();
 
     /* signup */
     router.get('/signup', (req, res) => {
@@ -22,7 +23,6 @@ module.exports = function(knex) {
 
     router.post('/signup', (req, res) => {
         console.log(req.body);
-        console.log(req.body.username, req.body.email, req.body.password, req.body.confirm_password);
 
         return Promise.try(() => {
             return checkit({
@@ -70,7 +70,6 @@ module.exports = function(knex) {
 
     router.post('/signin', (req, res) => {
         console.log(req.body);
-        console.log(req.body.usernameOrEmail, req.body.password);
 
         return Promise.try(() => {
             return checkit({
@@ -89,7 +88,8 @@ module.exports = function(knex) {
                     return scrypt.verifyHash(req.body.password, user.pwHash);
                 }).then(() => {
                     /* Password was correct */
-                    req.session.userId = user.id; // set req.session.userId for the current express session
+                    /* therefore set req.session.userId for the current session */
+                    req.session.userId = user.id;
                     res.redirect('/accounts/dashboard');
                 }).catch(scrypt.PasswordError, (err) => {
                     throw new errors.UnauthorizedError('Invalid password'); // errors.AuthenticationError???
@@ -109,22 +109,20 @@ module.exports = function(knex) {
     /* dashboard */
     router.get('/dashboard', requireSignin, (req, res) => {
         return Promise.try(() => {
-            return knex('posts').select('title').where({ userId: req.session.userId });
-        }).then((titles) => {
-            console.log(typeof titles, titles);
+            return knex('posts').where({ userId: req.session.userId });
+        }).then((posts) => {
+            console.log(posts);
 
-            let postTitles;
-
-            if (titles.length === 0) {
-                postTitles === 'You haven\'t posted anything yet';
-            } else {
-                postTitles === titles[0].title;
-            }
+            // let postTitles;
+            // if (posts.length === 0) {
+            //     postTitles === 'You haven\'t posted anything yet';
+            // } else {
+            //     postTitles === posts.title;
+            // }
 
             // res.render('accounts/dashboard');
             res.render('accounts/dashboard', {
-                user: req.user,
-                latestPosts: postTitles
+                latestPosts: posts
             });
         });
     });
@@ -136,7 +134,6 @@ module.exports = function(knex) {
 
     router.post('/profile', requireSignin, (req, res) => {
         console.log(req.body);
-        console.log(req.body.name, req.body.bio, req.body.userPic);
 
         return Promise.try(() => {
             return knex('users').insert({
