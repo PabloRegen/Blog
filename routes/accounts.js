@@ -109,18 +109,10 @@ module.exports = function(knex) {
     /* dashboard */
     router.get('/dashboard', requireSignin, (req, res) => {
         return Promise.try(() => {
-            return knex('posts').where({ userId: req.session.userId });
+            return knex('posts').where({ userId: req.user.id });
         }).then((posts) => {
-            console.log(posts);
+            console.log('there are ' + posts.length + ' posts');
 
-            // let postTitles;
-            // if (posts.length === 0) {
-            //     postTitles === 'You haven\'t posted anything yet';
-            // } else {
-            //     postTitles === posts.title;
-            // }
-
-            // res.render('accounts/dashboard');
             res.render('accounts/dashboard', {
                 latestPosts: posts
             });

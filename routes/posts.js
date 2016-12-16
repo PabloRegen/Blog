@@ -45,9 +45,39 @@ module.exports = function(knex) {
 
     /* read */
     router.get('/:id', (req, res) => {
+        console.log(req.body);
         console.log('read post ' + req.params.id);
-        res.render('posts/read');
+
+        return Promise.try(() => {
+            return knex('posts').where({ id : req.params.id });
+        }).then((post) => {
+            console.log(post);
+            res.render('posts/read', {
+                post: post[0]
+            });
+        });
     });
+
+        // /* read */
+    // router.get('/:id', (req, res) => {
+    //     console.log(req.body);
+    //     console.log('read post ' + req.params.id);
+
+    //     return Promise.try(() => {
+    //         return knex('posts').where({ id : req.params.id });
+    //     }).then((posts) => {
+    //         console.log(posts[0]);
+    //         let YYY = posts[0];
+
+    //         return knex('users').where({ id : posts[0].userId });
+    //     }).then((users, YYY) => {
+
+    //         res.render('posts/read', {
+    //             post: YYY,
+    //             user: users[0]
+    //         });
+    //     });
+    // });
 
     /* delete */
     router.delete('/:id/delete', requireSignin, (req, res) => {

@@ -5,19 +5,34 @@ block title
 
 block main
 	h1 Blog post
-	p contributor pic
-	p contributor name or username
-	p contributor bio
-	p post date
-	p post title
-	p post header
-	p post picture
-	p post body
-	p
-		input(type='button' value='Like')
+
+	if user.pic != null
+		p #{user.pic}
+	else
+		p Avatar
+
+	p #{user.username}
+
+	if user.bio != null
+		p #{user.bio}
+
+	p posted: #{post.postedAt}
+
+	if post.updatedAt !== post.postedAt
+		p updated: #{post.updatedAt}
+
+	p #{post.title}
+
+	if post.subtitle != null
+		p #{post.subtitle}
+
+	p post picture: TBD
+	p #{post.body} 
+	p: input(type='button' value='Like')
 	p
 		|New to Blog? 
 		a(href='/accounts/signup') Create your Blog account
+
 	p
 		|Already have an account? 
 		a(href='/accounts/signin') Sign in

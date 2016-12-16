@@ -48,6 +48,7 @@ app.use(expressSession({
 app.use(rfr('middleware/fetch-current-user')(knex));
 
 /* Set user as request-wide locals */
+/* to make the current user object available in every res.render for a request */
 app.use(function(req, res, next) {
 	console.log('--> Set user as request-wide locals. req.user = ' + req.user);
     res.locals.user = req.user;
