@@ -45,10 +45,12 @@ app.use(expressSession({
 // app.use(sessionHandler(???)); // Goes here?
 
 /* Fetch current user */
+/* from the db and set it on req object */
+/* so it's available application-wide for every new request */
 app.use(rfr('middleware/fetch-current-user')(knex));
 
 /* Set user as request-wide locals */
-/* to make the current user object available in every res.render for a request */
+/* to make the user object available in every res.render for all requests */
 app.use(function(req, res, next) {
 	console.log('--> Set user as request-wide locals. req.user = ' + req.user);
     res.locals.user = req.user;

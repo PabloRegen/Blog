@@ -22,7 +22,7 @@ module.exports = function(knex) {
 
         return Promise.try(() => {
             return knex('posts').insert({
-                userId: req.session.userId,
+                userId: req.user.id,
                 title: req.body.title, 
                 subtitle: req.body.subtitle, 
                 body: req.body.body
@@ -51,33 +51,12 @@ module.exports = function(knex) {
         return Promise.try(() => {
             return knex('posts').where({ id : req.params.id });
         }).then((post) => {
-            console.log(post);
+            console.log(post[0]);
             res.render('posts/read', {
                 post: post[0]
             });
         });
     });
-
-        // /* read */
-    // router.get('/:id', (req, res) => {
-    //     console.log(req.body);
-    //     console.log('read post ' + req.params.id);
-
-    //     return Promise.try(() => {
-    //         return knex('posts').where({ id : req.params.id });
-    //     }).then((posts) => {
-    //         console.log(posts[0]);
-    //         let YYY = posts[0];
-
-    //         return knex('users').where({ id : posts[0].userId });
-    //     }).then((users, YYY) => {
-
-    //         res.render('posts/read', {
-    //             post: YYY,
-    //             user: users[0]
-    //         });
-    //     });
-    // });
 
     /* delete */
     router.delete('/:id/delete', requireSignin, (req, res) => {

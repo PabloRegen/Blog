@@ -18,8 +18,10 @@ block main
 
 	p posted: #{post.postedAt}
 
-	if post.updatedAt !== post.postedAt
-		p updated: #{post.updatedAt}
+	//- at migrations need to change updatedAt to default to null if not updated
+	//- and modify the condition here
+	//- if post.updatedAt !== post.postedAt
+	//- 	p updated: #{post.updatedAt}
 
 	p #{post.title}
 
@@ -27,8 +29,11 @@ block main
 		p #{post.subtitle}
 
 	p post picture: TBD
-	p #{post.body} 
+	p #{post.body}
+
+	//- need form?
 	p: input(type='button' value='Like')
+
 	p
 		|New to Blog? 
 		a(href='/accounts/signup') Create your Blog account

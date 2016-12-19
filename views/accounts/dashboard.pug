@@ -13,10 +13,10 @@ block main
 	p
 		a(href='/posts/create') Create a new post
 	p Your messages
-	p Your latest posts: #{latestPosts}
+	p Your latest posts:
 	ul
 		for posts in latestPosts
-			li: a(href='/posts/' + posts.id) posts.title
+			li: a(href='/posts/' + posts.id)= posts.title
 		else
 			li You haven't posted anything yet
 	p Your visitors
