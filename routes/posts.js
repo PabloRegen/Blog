@@ -26,21 +26,43 @@ module.exports = function(knex) {
                 title: req.body.title, 
                 subtitle: req.body.subtitle, 
                 body: req.body.body
-            });
-        }).then(() => {
-            res.send({title: req.body.title, subtitle: req.body.subtitle, body: req.body.body, postPic: req.body.postPic});
+            }).returning('id');
+        }).then((postId) => {
+            res.redirect('/posts/' + postId);
         });
     });
 
     /* edit */
     router.get('/:id/edit', requireSignin, (req, res) => {
+        console.log(req.body);
         console.log('edit post ' + req.params.id);
-        res.render('posts/edit');
+
+        return Promise.try(() => {
+            return knex('posts').where({ id : req.params.id });
+        }).then((post) => {
+            console.log(post[0]);
+            res.render('posts/edit', {
+                post: post[0]
+            });
+        });
     });
 
     router.post('/:id/edit', requireSignin, (req, res) => {
+        console.log(req.body);
         console.log('edit post ' + req.params.id);
-        // do something
+
+        return Promise.try(() => {
+            return knex('posts')
+            .where({ id: req.params.id })
+            .update({
+                title: req.body.title, 
+                subtitle: req.body.subtitle, 
+                body: req.body.body
+            })
+            .returning('id');
+        }).then((postId) => {
+            res.redirect('/posts/' + postId);
+        });
     });
 
     /* read */

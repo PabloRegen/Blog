@@ -5,21 +5,21 @@ block title
 
 block main
 	h1 Edit your blog post
-	form(action='/posts/edit' method='post')
+	form(action='/posts/' + post.id + '/edit' method='post')
 		p
 			|Title <br/>
-			input(type='text' name='title' required)
+			input(type='text' name='title' value=post.title)
 		p
-			|Header <br/>
-			textarea(name='header')
+			|Subtitle <br/>
+			textarea(name='subtitle')= post.subtitle
 		p
 			|Body <br/>
-			textarea(name='bio' placeholder='Your article goes here...')
+			textarea(name='body')= post.body
 		p
 			|Change the picture <br/>
 			input(type='file' name='postPic')
-		p
-			input(type='button' value='Save post')
+		//- p
+		//- 	input(type='button' value='Save post')
 		p
 			input(type='submit' value='Update post')
 	form
