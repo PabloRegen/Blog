@@ -1,5 +1,7 @@
 'use strict';
 
+console.log("--> home route: RFR");
+
 let router = require('express-promise-router')();
 
 router.get('/', (req, res) => {

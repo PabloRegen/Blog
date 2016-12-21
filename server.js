@@ -9,6 +9,7 @@ const expressSession = require('express-session');
 const KnexSessionStore = require('connect-session-knex')(expressSession);
 
 // const sessionHandler = rfr('middleware/session-handler')  // Will deal with removed users in the session handling middleware
+const fetchCurrentUser = rfr('middleware/fetch-current-user')
 const errorHandler = rfr('middleware/error-handler');
 const errors = rfr('lib/errors');
 
@@ -47,7 +48,7 @@ app.use(expressSession({
 /* Fetch current user */
 /* from the db and set it on req object */
 /* so it's available application-wide for every new request */
-app.use(rfr('middleware/fetch-current-user')(knex));
+app.use(fetchCurrentUser(knex));
 
 /* Set user as request-wide locals */
 /* to make the user object available in every res.render for all requests */
@@ -64,6 +65,7 @@ app.use('/posts', require('./routes/posts')(knex));
 
 /* Default 404 handler */
 app.use(function(req, res, next) {
+	console.log("--> Default 404 handler: run for every request");
 	next(new errors.NotFoundError('--- server.js: Page not found. ---'));
 });
 

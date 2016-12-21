@@ -1,5 +1,7 @@
 'use strict';
 
+console.log("--> accounts route: RFR");
+
 const Promise = require('bluebird');
 const expressPromiseRouter = require('express-promise-router');
 const checkit = require('checkit');
@@ -14,6 +16,8 @@ const validatePassword = rfr('lib/validate-password');
 const requireSignin = rfr('middleware/require-signin');
 
 module.exports = function(knex) {
+    console.log("--> accounts route: APP.USE");
+
     let router = expressPromiseRouter();
 
     /* signup */

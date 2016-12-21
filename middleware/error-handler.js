@@ -1,7 +1,11 @@
 'use strict';
 
-module.exports = function(environment) {	
+console.log("--> error-handler.js: run by const errorHandler = rfr('middleware/error-handler')");
+
+module.exports = function(environment) {
+	console.log("--> error-handler.js: app.use(errorHandler(environment))");
 	return function(err, req, res, next) {
+		console.log("--> error-handler.js: run for every request");
 		if (environment === 'development') {
 			console.log("--- error-handler.js: err.name       --- ", err.name);
 			console.log("--- error-handler.js: err.message    --- ", err.message);			

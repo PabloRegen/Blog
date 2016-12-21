@@ -1,10 +1,14 @@
 'use strict';
 
+console.log("--> fetch-current-user.js: const fetchCurrentUser = rfr('middleware/fetch-current-user')");
+
 const Promise = require('bluebird');
 
 module.exports = function(knex) {
+    console.log("--> fetch-current-user.js: app.use(fetchCurrentUser(knex))");
+
     return function(req, res, next) {
-        console.log('--> fetch-current-user.js');
+        console.log('--> fetch-current-user.js: run for every request');
         if (req.session.userId == null) {
         	/* User is not logged in */
             next();
