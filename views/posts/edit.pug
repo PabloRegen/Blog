@@ -5,7 +5,7 @@ block title
 
 block main
 	h1 Edit your blog post
-	form(action='/posts/' + post.id + '/edit' method='post')
+	form(action=`/posts/${post.id}/edit` method='post')
 		p
 			|Title <br/>
 			input(type='text' name='title' value=post.title)

@@ -113,9 +113,9 @@ module.exports = function(knex) {
     /* dashboard */
     router.get('/dashboard', requireSignin, (req, res) => {
         return Promise.try(() => {
-            return knex('posts').where({ userId: req.user.id });
+            return knex('posts').where({ userId: req.user.id }).orderBy('id', 'desc');
         }).then((posts) => {
-            console.log('there are ' + posts.length + ' posts');
+            console.log(`there are ${posts.length} posts`);
 
             res.render('accounts/dashboard', {
                 latestPosts: posts

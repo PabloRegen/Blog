@@ -32,14 +32,14 @@ module.exports = function(knex) {
                 body: req.body.body
             }).returning('id');
         }).then((postId) => {
-            res.redirect('/posts/' + postId);
+            res.redirect(`/posts/${postId}`);
         });
     });
 
     /* edit */
     router.get('/:id/edit', requireSignin, (req, res) => {
         console.log(req.body);
-        console.log('edit post ' + req.params.id);
+        console.log(`edit post ${req.params.id}`);
 
         return Promise.try(() => {
             return knex('posts').where({ id : req.params.id });
@@ -53,7 +53,7 @@ module.exports = function(knex) {
 
     router.post('/:id/edit', requireSignin, (req, res) => {
         console.log(req.body);
-        console.log('edit post ' + req.params.id);
+        console.log(`edit post ${req.params.id}`);
 
         return Promise.try(() => {
             return knex('posts')
@@ -65,14 +65,14 @@ module.exports = function(knex) {
             })
             .returning('id');
         }).then((postId) => {
-            res.redirect('/posts/' + postId);
+            res.redirect(`/posts/${postId}`);
         });
     });
 
     /* read */
     router.get('/:id', (req, res) => {
         console.log(req.body);
-        console.log('read post ' + req.params.id);
+        console.log(`read post ${req.params.id}`);
 
         return Promise.try(() => {
             return knex('posts').where({ id : req.params.id });
@@ -86,7 +86,7 @@ module.exports = function(knex) {
 
     /* delete */
     router.delete('/:id/delete', requireSignin, (req, res) => {
-        console.log('delete post ' + req.params.id);
+        console.log(`delete post ${req.params.id}`);
         // do something
     });
 

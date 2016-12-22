@@ -32,8 +32,8 @@ block main
 	p #{post.body}
 
 	if user.id === post.userId
-		p 
-			a(href='/posts/' + post.id + '/edit') Edit your post
+		p
+			a(href=`/posts/${post.id}/edit`) Edit your post
 
 	//- need form?
 	p: input(type='button' value='Like')
