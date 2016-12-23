@@ -9,6 +9,7 @@ module.exports = function(knex) {
 
     return function(req, res, next) {
         console.log('--> fetch-current-user.js: run for every request');
+        
         if (req.session.userId == null) {
         	/* User is not logged in */
             next();

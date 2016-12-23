@@ -10,10 +10,12 @@ const rfr = require('rfr');
 // const bhttp = require('bhttp');
 
 const requireSignin = rfr('middleware/require-signin');
+const verifyMembershipOrOwn = rfr('middleware/verify-membership-or-own');
 
 module.exports = function(knex) {
     console.log("--> posts route: APP.USE");
 
+    const verifyMembershipOrOwn = rfr('middleware/verify-membership-or-own')(knex);
     let router = expressPromiseRouter();
  
     /* create */
@@ -37,7 +39,7 @@ module.exports = function(knex) {
     });
 
     /* edit */
-    router.get('/:id/edit', requireSignin, (req, res) => {
+    router.get('/:id/edit', requireSignin, verifyMembershipOrOwn, (req, res) => {
         console.log(req.body);
         console.log(`edit post ${req.params.id}`);
 
@@ -51,7 +53,7 @@ module.exports = function(knex) {
         });
     });
 
-    router.post('/:id/edit', requireSignin, (req, res) => {
+    router.post('/:id/edit', requireSignin, verifyMembershipOrOwn, (req, res) => {
         console.log(req.body);
         console.log(`edit post ${req.params.id}`);
 
@@ -85,9 +87,9 @@ module.exports = function(knex) {
     });
 
     /* delete */
-    router.delete('/:id/delete', requireSignin, (req, res) => {
+    router.delete('/:id/delete', requireSignin, verifyMembershipOrOwn, (req, res) => {
         console.log(`delete post ${req.params.id}`);
-        // do something
+        // do something: soft or hard delete?
     });
 
     return router;
