@@ -5,7 +5,7 @@ console.log("--> accounts route: RFR");
 const Promise = require('bluebird');
 const expressPromiseRouter = require('express-promise-router');
 const checkit = require('checkit');
-const scrypt = require('scrypt-for-humans');
+const scryptForHumans = require('scrypt-for-humans');
 const rfr = require('rfr');
 // const multer  = require('multer'); // NOTE: form MUST be multipart format. https://www.npmjs.com/package/multer
 // let upload = multer({ dest: 'uploads/' });
@@ -52,7 +52,7 @@ module.exports = function(knex) {
                 confirm_password: ['required', 'matchesField:password']
             }).run(req.body);
         }).then(() => {
-            return scrypt.hash(req.body.password);
+            return scryptForHumans.hash(req.body.password);
         }).then((hash) => {
             return knex('users').insert({
                 username: req.body.username,
@@ -68,6 +68,7 @@ module.exports = function(knex) {
     });
 
     /* signin */
+    /* purpose: to authenticate users and set up the session (req.session.userId) */
     router.get('/signin', (req, res) => {
         res.render('accounts/signin');
     });
@@ -89,13 +90,13 @@ module.exports = function(knex) {
                 let user = users[0];
 
                 return Promise.try(() => {
-                    return scrypt.verifyHash(req.body.password, user.pwHash);
+                    return scryptForHumans.verifyHash(req.body.password, user.pwHash);
                 }).then(() => {
                     /* Password was correct */
-                    /* therefore set req.session.userId for the current session */
+                    /* therefore set up req.session.userId for the current session */
                     req.session.userId = user.id;
                     res.redirect('/accounts/dashboard');
-                }).catch(scrypt.PasswordError, (err) => {
+                }).catch(scryptForHumans.PasswordError, (err) => {
                     throw new errors.UnauthorizedError('Invalid password'); // errors.AuthenticationError???
                 });
             }
@@ -113,7 +114,7 @@ module.exports = function(knex) {
     /* dashboard */
     router.get('/dashboard', requireSignin, (req, res) => {
         return Promise.try(() => {
-            return knex('posts').where({ userId: req.user.id }).orderBy('id', 'desc');
+            return knex('posts').where({userId: req.user.id}).orderBy('id', 'desc');
         }).then((posts) => {
             console.log(`there are ${posts.length} posts`);
 

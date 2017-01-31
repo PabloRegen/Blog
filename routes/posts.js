@@ -10,12 +10,11 @@ const rfr = require('rfr');
 // const bhttp = require('bhttp');
 
 const requireSignin = rfr('middleware/require-signin');
-const verifyMembershipOrOwn = rfr('middleware/verify-membership-or-own');
 
 module.exports = function(knex) {
     console.log("--> posts route: APP.USE");
 
-    const verifyMembershipOrOwn = rfr('middleware/verify-membership-or-own')(knex);
+    const auth = rfr('middleware/auth')(knex);
     let router = expressPromiseRouter();
  
     /* create */
@@ -39,12 +38,12 @@ module.exports = function(knex) {
     });
 
     /* edit */
-    router.get('/:id/edit', requireSignin, verifyMembershipOrOwn, (req, res) => {
+    router.get('/:id/edit', requireSignin, auth(2), (req, res) => {
         console.log(req.body);
         console.log(`edit post ${req.params.id}`);
 
         return Promise.try(() => {
-            return knex('posts').where({ id : req.params.id });
+            return knex('posts').where({id: req.params.id});
         }).then((post) => {
             console.log(post[0]);
             res.render('posts/edit', {
@@ -53,19 +52,19 @@ module.exports = function(knex) {
         });
     });
 
-    router.post('/:id/edit', requireSignin, verifyMembershipOrOwn, (req, res) => {
+    router.post('/:id/edit', requireSignin, auth(2), (req, res) => {
         console.log(req.body);
         console.log(`edit post ${req.params.id}`);
 
         return Promise.try(() => {
             return knex('posts')
-            .where({ id: req.params.id })
-            .update({
-                title: req.body.title, 
-                subtitle: req.body.subtitle, 
-                body: req.body.body
-            })
-            .returning('id');
+                .where({id: req.params.id})
+                .update({
+                    title: req.body.title, 
+                    subtitle: req.body.subtitle, 
+                    body: req.body.body
+                })
+                .returning('id');
         }).then((postId) => {
             res.redirect(`/posts/${postId}`);
         });
@@ -77,7 +76,7 @@ module.exports = function(knex) {
         console.log(`read post ${req.params.id}`);
 
         return Promise.try(() => {
-            return knex('posts').where({ id : req.params.id });
+            return knex('posts').where({id: req.params.id});
         }).then((post) => {
             console.log(post[0]);
             res.render('posts/read', {
@@ -87,7 +86,7 @@ module.exports = function(knex) {
     });
 
     /* delete */
-    router.delete('/:id/delete', requireSignin, verifyMembershipOrOwn, (req, res) => {
+    router.delete('/:id/delete', requireSignin, auth(2), (req, res) => {
         console.log(`delete post ${req.params.id}`);
         // do something: soft or hard delete?
     });

@@ -46,8 +46,11 @@ app.use(expressSession({
 // app.use(sessionHandler(???)); // Goes here?
 
 /* Fetch current user */
-/* from the db and set it on req object */
+/* recreates the req.user property at the start of every request */
+/* by grabing the corresponding user object for the session, if any */
+/* from the db and storing it on req.user */
 /* so it's available application-wide for every new request */
+/* eliminating the need of repeting same queries whenever the current user is needed */
 app.use(fetchCurrentUser(knex));
 
 /* Set user as request-wide locals */
